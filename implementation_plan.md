@@ -5,6 +5,23 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 ## ⚠️ Regra de Versionamento Automatizada
 > **"A marcação de passo iniciado (marcado `[/]`) DEVE ser feita assim que o agente iniciar o trabalho no item, funcionando como sinalizador de atividade ativa no Roadmap. A cada passo concluído (marcado `[x]`) DEVE haver uma execução imediata de um `git commit` detalhando a entrega. SOMENTE a finalização `[x]` dispara commits; a marcação `[/]` serve exclusivamente para controle de execução em tempo real pelo agente atual."**
 
+## 🗄️ Detalhes Técnicos & Status do Banco (VPS1)
+- **Nome do Banco:** `devcs_banco_groomy`
+- **Host / Porta:** VPS1 (`135.181.254.249`) via Docker MySQL na porta `3308`.
+- **Acesso Operacional:** Usuário `csi_super` com permissões completas concedidas.
+- **Tecnologia DBF -> MySQL:** Script em Python (`migrate_dbfs.py`) utilizando `dbfread`, `pymysql` e `sshtunnel`.
+
+### 📊 Estatísticas da Migração de Dados (ETL Realizado):
+- **clientes**: 4.453 registros
+- **profissionais**: 19 registros
+- **servicos**: 342 registros
+- **agenda_vfp**: 17.253 registros (mantendo o grid de horários original do FoxPro)
+- **atendimentos**: 56.178 registros
+- **itens_atendimento**: 151.876 registros
+- **pagamentos**: 55.996 registros
+- **comissoes**: 339.872 registros
+- **Total Migrado:** Mais de 637.000 registros importados em lote com sucesso.
+
 ---
 
 ## 🗺️ Roadmap de Execução
