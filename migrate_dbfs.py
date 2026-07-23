@@ -5,7 +5,7 @@ from sshtunnel import SSHTunnelForwarder
 import datetime
 
 # Configuration
-DBF_DIR = r"G:\Meu Drive\VisualFoxPro\Connection\Dados"
+DBF_DIR = r"C:\AI-PROJECTS\GROOMY\CSISYS\Dados"
 SSH_HOST = "135.181.254.249"
 SSH_PORT = 9222
 SSH_USER = "root"
@@ -27,10 +27,8 @@ def get_field_by_prefix(record, prefix):
 
 def clean_val(val):
     if isinstance(val, str):
-        # Remove trailing and leading whitespace, and handle any decoding anomalies
         return val.strip()
     if isinstance(val, (datetime.date, datetime.datetime)):
-        # Check for VFP default zero dates
         if hasattr(val, 'year') and val.year < 1900:
             return None
         return val
@@ -58,7 +56,7 @@ def run_migration():
         )
         
         try:
-            # Disable foreign key checks for speed and avoiding dependency order failures during bulk migration
+            # Disable foreign key checks
             with connection.cursor() as cursor:
                 cursor.execute("SET FOREIGN_KEY_CHECKS = 0;")
                 cursor.execute("TRUNCATE TABLE clientes;")
@@ -69,31 +67,33 @@ def run_migration():
                 cursor.execute("TRUNCATE TABLE itens_atendimento;")
                 cursor.execute("TRUNCATE TABLE pagamentos;")
                 cursor.execute("TRUNCATE TABLE comissoes;")
+                cursor.execute("TRUNCATE TABLE produtos;")
+                cursor.execute("TRUNCATE TABLE servicos_profissional;")
+                cursor.execute("TRUNCATE TABLE caixa;")
+                cursor.execute("TRUNCATE TABLE despesas;")
+                cursor.execute("TRUNCATE TABLE bandeiras;")
+                cursor.execute("TRUNCATE TABLE atividades;")
+                cursor.execute("TRUNCATE TABLE pedidos;")
                 connection.commit()
 
-            # 1. Clientes
+            # Core Tables
             migrate_clientes(connection)
-
-            # 2. Profissionais
             migrate_profissionais(connection)
-
-            # 3. Serviços
             migrate_servicos(connection)
-
-            # 4. Agenda VFP
             migrate_agenda(connection)
-
-            # 5. Atendimentos
             migrate_atendimentos(connection)
-
-            # 6. Itens Atendimento
             migrate_itens_atendimento(connection)
-
-            # 7. Pagamentos
             migrate_pagamentos(connection)
-
-            # 8. Comissões
             migrate_comissoes(connection)
+            
+            # Supplementary Tables
+            migrate_produtos(connection)
+            migrate_servicos_profissional(connection)
+            migrate_caixa(connection)
+            migrate_despesas(connection)
+            migrate_bandeiras(connection)
+            migrate_atividades(connection)
+            migrate_pedidos(connection)
 
             # Re-enable foreign key checks
             with connection.cursor() as cursor:
@@ -176,7 +176,6 @@ def migrate_profissionais(connection):
     """
     
     batch = []
-    count = 0
     for record in dbf:
         is_active = 1
         id_ativida = record.get('ID_ATIVIDA')
@@ -500,6 +499,296 @@ def migrate_comissoes(connection):
         connection.commit()
         count += len(batch)
         print(f"Finished Comissões: {count} records.")
+
+def migrate_produtos(connection):
+    path = os.path.join(DBF_DIR, "PRODUTOS.DBF")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "produtos.dbf")
+        
+    print(f"\nMigrating Produtos from {path}...")
+    dbf = DBF(path, encoding='cp1252', ignore_missing_memofile=True)
+    
+    sql = """
+        INSERT INTO produtos (
+            id_legado, descricao, fornecedor, preco_custo, preco_venda, estoque,
+            quantidade_vendida, lucro, data_inicio, estoque2, duracao,
+            cod_fornecedor, tipo, anotacao, usuario, data_alteracao
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    batch = []
+    for record in dbf:
+        desc = get_field_by_prefix(record, 'PO_DESCRI')
+        preco_custo = get_field_by_prefix(record, 'PO_PREÇOCU') or get_field_by_prefix(record, 'PO_PRE')
+        preco_venda = get_field_by_prefix(record, 'PO_PREÇOVE') or record.get('PO_PRECOVE')
+        duracao = get_field_by_prefix(record, 'PO_DURA')
+        anot = get_field_by_prefix(record, 'PO_ANOTA')
+        
+        row = (
+            clean_val(record.get('PO_CODIGO')),
+            clean_val(desc),
+            clean_val(record.get('PO_FORNECE')),
+            clean_val(preco_custo),
+            clean_val(preco_venda),
+            clean_val(record.get('PO_ESTOQUE')),
+            clean_val(record.get('PO_QUANTVE')),
+            clean_val(record.get('PO_LUCRO')),
+            clean_val(record.get('PO_DATAINI')),
+            clean_val(record.get('PO_ESTOQU2')),
+            clean_val(duracao),
+            clean_val(record.get('PO_CODFORN')),
+            clean_val(record.get('PO_TIPO')),
+            clean_val(anot),
+            clean_val(record.get('USUARIO')),
+            clean_val(record.get('ALTERA'))
+        )
+        batch.append(row)
+        
+    with connection.cursor() as cursor:
+        cursor.executemany(sql, batch)
+    connection.commit()
+    print(f"Finished Produtos: {len(batch)} records.")
+
+def migrate_servicos_profissional(connection):
+    path = os.path.join(DBF_DIR, "SERVIÇOS_PROFISSIONAL.DBF")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "SERVIÇOS_PROFISSIONAL.dbf")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "servicos_profissional.dbf")
+        
+    print(f"\nMigrating Serviços Profissional from {path}...")
+    dbf = DBF(path, encoding='cp1252', ignore_missing_memofile=True)
+    
+    sql = """
+        INSERT INTO servicos_profissional (
+            profissional_id_legado, servico_id_legado, porcentagem, valor, usuario, data_alteracao
+        ) VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    
+    batch = []
+    for record in dbf:
+        row = (
+            clean_val(record.get('PF_CODIGO')),
+            clean_val(record.get('SE_CODIGO')),
+            clean_val(record.get('SP_PORCENT')),
+            clean_val(record.get('SP_VALOR')),
+            clean_val(record.get('USUARIO')),
+            clean_val(record.get('ALTERA'))
+        )
+        batch.append(row)
+        
+    with connection.cursor() as cursor:
+        cursor.executemany(sql, batch)
+    connection.commit()
+    print(f"Finished Serviços Profissional: {len(batch)} records.")
+
+def migrate_caixa(connection):
+    path = os.path.join(DBF_DIR, "CAIXA.DBF")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "caixa.dbf")
+        
+    print(f"\nMigrating Caixa from {path}...")
+    dbf = DBF(path, encoding='cp1252', ignore_missing_memofile=True)
+    
+    sql = """
+        INSERT INTO caixa (
+            data_caixa, valor_inicial, valor_dinheiro, valor_cartao, valor_cheque,
+            valor_despesa, diferenca, valor_final, cx_usuario, valor_servico,
+            valor_produto, valor_chequep, vendas_dia, data_fechamento, atraso,
+            usuario, data_alteracao, desconto, retirada
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    batch = []
+    count = 0
+    for record in dbf:
+        cx_user = get_field_by_prefix(record, 'CX_USU')
+        cx_serv = get_field_by_prefix(record, 'CX_SER')
+        cx_prod = get_field_by_prefix(record, 'CX_PRO')
+        cx_cheqp = get_field_by_prefix(record, 'CX_CHEQUEP')
+        cx_vendasd = get_field_by_prefix(record, 'CX_VEND')
+        cx_datafec = get_field_by_prefix(record, 'CX_DATAFE')
+        cx_desc = get_field_by_prefix(record, 'CX_DESC')
+        cx_ret = get_field_by_prefix(record, 'CX_RET')
+        
+        row = (
+            clean_val(record.get('CX_DATA')),
+            clean_val(record.get('CX_INICIAL')),
+            clean_val(record.get('CX_DINHEIR')),
+            clean_val(record.get('CX_CARTAO')),
+            clean_val(record.get('CX_CHEQUE')),
+            clean_val(record.get('CX_DESPESA')),
+            clean_val(record.get('CX_DIFEREN')),
+            clean_val(record.get('CX_FINAL')),
+            clean_val(cx_user),
+            clean_val(cx_serv),
+            clean_val(cx_prod),
+            clean_val(cx_cheqp),
+            clean_val(cx_vendasd),
+            clean_val(cx_datafec),
+            clean_val(record.get('CX_ATRASO')),
+            clean_val(record.get('USUARIO')),
+            clean_val(record.get('ALTERA')),
+            clean_val(cx_desc),
+            clean_val(cx_ret)
+        )
+        batch.append(row)
+        if len(batch) >= BATCH_SIZE:
+            with connection.cursor() as cursor:
+                cursor.executemany(sql, batch)
+            connection.commit()
+            count += len(batch)
+            print(f"Migrated {count} caixa records...")
+            batch = []
+            
+    if batch:
+        with connection.cursor() as cursor:
+            cursor.executemany(sql, batch)
+        connection.commit()
+        count += len(batch)
+        print(f"Finished Caixa: {count} records.")
+
+def migrate_despesas(connection):
+    path = os.path.join(DBF_DIR, "DESPEZAS.DBF")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "despezas.dbf")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "despesas.dbf")
+        
+    print(f"\nMigrating Despesas from {path}...")
+    dbf = DBF(path, encoding='cp1252', ignore_missing_memofile=True)
+    
+    sql = """
+        INSERT INTO despesas (
+            id_legado, descricao, valor, data_despesa, anotacao, status_pago, usuario, data_alteracao
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    batch = []
+    count = 0
+    for record in dbf:
+        desc = get_field_by_prefix(record, 'DE_DESCRI')
+        anot = get_field_by_prefix(record, 'DE_ANOTA')
+        
+        row = (
+            clean_val(record.get('DE_CODIGO')),
+            clean_val(desc),
+            clean_val(record.get('DE_VALOR')),
+            clean_val(record.get('DE_DATA')),
+            clean_val(anot),
+            1 if record.get('DE_STATUS') else 0,
+            clean_val(record.get('USUARIO')),
+            clean_val(record.get('ALTERA'))
+        )
+        batch.append(row)
+        if len(batch) >= BATCH_SIZE:
+            with connection.cursor() as cursor:
+                cursor.executemany(sql, batch)
+            connection.commit()
+            count += len(batch)
+            print(f"Migrated {count} despesas...")
+            batch = []
+            
+    if batch:
+        with connection.cursor() as cursor:
+            cursor.executemany(sql, batch)
+        connection.commit()
+        count += len(batch)
+        print(f"Finished Despesas: {count} records.")
+
+def migrate_bandeiras(connection):
+    path = os.path.join(DBF_DIR, "BANDEIRA.DBF")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "bandeira.dbf")
+        
+    print(f"\nMigrating Bandeiras from {path}...")
+    dbf = DBF(path, encoding='cp1252', ignore_missing_memofile=True)
+    
+    sql = """
+        INSERT INTO bandeiras (
+            id_legado, nome, tipo, taxa, usuario, data_alteracao
+        ) VALUES (%s, %s, %s, %s, %s, %s)
+    """
+    
+    batch = []
+    for record in dbf:
+        row = (
+            clean_val(record.get('BA_CODIGO')),
+            clean_val(record.get('BA_NOME')),
+            clean_val(record.get('BA_TIPO')),
+            clean_val(record.get('BA_TAXA')),
+            clean_val(record.get('USUARIO')),
+            clean_val(record.get('ALTERA'))
+        )
+        batch.append(row)
+        
+    with connection.cursor() as cursor:
+        cursor.executemany(sql, batch)
+    connection.commit()
+    print(f"Finished Bandeiras: {len(batch)} records.")
+
+def migrate_atividades(connection):
+    path = os.path.join(DBF_DIR, "ATIVIDADE.DBF")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "atividade.dbf")
+        
+    print(f"\nMigrating Atividades from {path}...")
+    dbf = DBF(path, encoding='cp1252', ignore_missing_memofile=True)
+    
+    sql = """
+        INSERT INTO atividades (
+            id_legado, nome, usuario, data_alteracao
+        ) VALUES (%s, %s, %s, %s)
+    """
+    
+    batch = []
+    for record in dbf:
+        row = (
+            clean_val(record.get('ID_ATIVIDA')),
+            clean_val(record.get('AT_NOME')),
+            clean_val(record.get('USUARIO')),
+            clean_val(record.get('ALTERA'))
+        )
+        batch.append(row)
+        
+    with connection.cursor() as cursor:
+        cursor.executemany(sql, batch)
+    connection.commit()
+    print(f"Finished Atividades: {len(batch)} records.")
+
+def migrate_pedidos(connection):
+    path = os.path.join(DBF_DIR, "PEDIDO.DBF")
+    if not os.path.exists(path):
+        path = os.path.join(DBF_DIR, "pedido.dbf")
+        
+    print(f"\nMigrating Pedidos from {path}...")
+    dbf = DBF(path, encoding='cp1252', ignore_missing_memofile=True)
+    
+    sql = """
+        INSERT IGNORE INTO pedidos (
+            id_legado, cliente_id_legado, data_pedido, profissional_id_legado,
+            servico_id_legado, status_pedido, usuario, data_alteracao
+        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+    """
+    
+    batch = []
+    for record in dbf:
+        row = (
+            clean_val(record.get('PE_CODIGO')),
+            clean_val(record.get('CL_CODIGO')),
+            clean_val(record.get('PE_DATA')),
+            clean_val(record.get('PF_CODIGO')),
+            clean_val(record.get('SE_CODIGO')),
+            1 if record.get('PE_STATUS') else 0,
+            clean_val(record.get('USUARIO')),
+            clean_val(record.get('ALTERA'))
+        )
+        batch.append(row)
+        
+    with connection.cursor() as cursor:
+        cursor.executemany(sql, batch)
+    connection.commit()
+    print(f"Finished Pedidos: {len(batch)} records.")
 
 if __name__ == "__main__":
     start_time = datetime.datetime.now()

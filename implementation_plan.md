@@ -9,28 +9,35 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - **Nome do Banco:** `devcs_banco_groomy`
 - **Host / Porta:** VPS1 (`135.181.254.249`) via Docker MySQL na porta `3308`.
 - **Acesso Operacional:** Usuário `csi_super` com permissões completas concedidas.
-- **Tecnologia DBF -> MySQL:** Script em Python (`migrate_dbfs.py`) utilizando `dbfread`, `pymysql` e `sshtunnel`.
+- **Tecnologia DBF -> MySQL:** Script em Python (`migrate_dbfs.py`) utilizando `dbfread`, `pymysql` e `sshtunnel` lendo a base local.
 
 ### 📊 Estatísticas da Migração de Dados (ETL Realizado):
-- **clientes**: 4.453 registros
-- **profissionais**: 19 registros
-- **servicos**: 342 registros
-- **agenda_vfp**: 17.253 registros (mantendo o grid de horários original do FoxPro)
-- **atendimentos**: 56.178 registros
-- **itens_atendimento**: 151.876 registros
-- **pagamentos**: 55.996 registros
-- **comissoes**: 339.872 registros
-- **Total Migrado:** Mais de 637.000 registros importados em lote com sucesso.
+- **clientes**: 6.305 registros
+- **profissionais**: 15 registros
+- **servicos**: 391 registros
+- **agenda_vfp**: 16.602 registros (grade original do FoxPro)
+- **atendimentos**: 52.026 registros
+- **itens_atendimento**: 150.827 registros
+- **pagamentos**: 51.880 registros
+- **comissoes**: 592.665 registros
+- **produtos**: 26 registros
+- **servicos_profissional**: 6.136 registros
+- **caixa**: 5.501 registros
+- **despesas**: 38.056 registros
+- **bandeiras**: 6 registros
+- **atividades**: 5 registros
+- **pedidos**: 0 registros
+- **Total Migrado:** Mais de 920.000 registros importados em lote com sucesso da base atualizada.
 
 ---
 
 ## 🗺️ Roadmap de Execução
 
 ### Etapa 1: Infraestrutura de Dados & Prototipagem (Concluído)
-- [x] Criação do banco de dados MySQL `devcs_banco_groomy` na VPS1
-- [x] Desenvolvimento do script de migração ETL (`migrate_dbfs.py`)
-- [x] Execução da migração massiva dos DBFs do FoxPro para a VPS1 (600k+ registros importados)
-- [x] Desenvolvimento do mockup funcional HTML interativo (`index.html`) com suporte a drag-and-drop, cupom de atendimento e comissões em tempo real
+- [x] Criação do banco de dados MySQL `devcs_banco_groomy` na VPS1 (Tabelas Principais e Complementares)
+- [x] Desenvolvimento do script de migração ETL completo (`migrate_dbfs.py`)
+- [x] Execução da migração massiva dos DBFs do FoxPro para a VPS1 (Tabelas completas)
+- [x] Desenvolvimento do mockup funcional HTML interativo (`index.html`)
 
 ### Etapa 2: Inicialização da Aplicação Next.js
 - [ ] Configuração do projeto Next.js (App Router, TypeScript)
