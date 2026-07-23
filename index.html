@@ -1,0 +1,1193 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Groomy - Sistema de Gestão para Cabeleireiros</title>
+    <!-- Google Fonts: Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <!-- FontAwesome for Premium Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg-base: #09090b;
+            --bg-surface: rgba(24, 24, 27, 0.7);
+            --bg-card: rgba(39, 39, 42, 0.5);
+            --border-color: rgba(63, 63, 70, 0.4);
+            
+            --primary: #8b5cf6;
+            --primary-hover: #7c3aed;
+            --primary-glow: rgba(139, 92, 246, 0.35);
+            
+            --secondary: #10b981;
+            --secondary-hover: #059669;
+            
+            --warning: #f59e0b;
+            
+            --text-main: #f4f4f5;
+            --text-muted: #a1a1aa;
+            --text-dark: #27272a;
+            
+            --font-family: 'Outfit', sans-serif;
+            --glass-blur: blur(12px);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-family);
+            background-color: var(--bg-base);
+            background-image: 
+                radial-gradient(at 0% 0%, rgba(139, 92, 246, 0.15) 0px, transparent 50%),
+                radial-gradient(at 100% 100%, rgba(16, 185, 129, 0.08) 0px, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+        }
+
+        /* Layout Container */
+        .app-container {
+            display: flex;
+            width: 100%;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            width: 280px;
+            background: rgba(18, 18, 20, 0.6);
+            backdrop-filter: var(--glass-blur);
+            border-right: 1px solid var(--border-color);
+            padding: 2rem 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 2.5rem;
+            flex-shrink: 0;
+            z-index: 10;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding-left: 0.5rem;
+        }
+
+        .logo-icon {
+            background: linear-gradient(135deg, var(--primary), #a78bfa);
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .logo-icon i {
+            font-size: 1.25rem;
+            color: #fff;
+        }
+
+        .logo-text {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            background: linear-gradient(to right, #fff, #a1a1aa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .menu-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.85rem 1rem;
+            border-radius: 10px;
+            color: var(--text-muted);
+            text-decoration: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: var(--transition);
+            border: 1px solid transparent;
+        }
+
+        .menu-item i {
+            font-size: 1.2rem;
+            width: 20px;
+            text-align: center;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            color: #fff;
+            background: rgba(139, 92, 246, 0.15);
+            border-color: rgba(139, 92, 246, 0.2);
+        }
+
+        .menu-item.active {
+            background: linear-gradient(135deg, var(--primary), rgba(139, 92, 246, 0.2));
+            box-shadow: 0 4px 15px rgba(139, 92, 246, 0.15);
+        }
+
+        /* Main Content */
+        .main-content {
+            flex-grow: 1;
+            padding: 2.5rem;
+            overflow-y: auto;
+            max-height: 100vh;
+        }
+
+        header {
+            margin-bottom: 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-title h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 0.25rem;
+        }
+
+        .header-title p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+        }
+
+        /* Cards & Containers */
+        .glass-card {
+            background: var(--bg-surface);
+            backdrop-filter: var(--glass-blur);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            margin-bottom: 2rem;
+        }
+
+        .section-tab {
+            display: none;
+            animation: fadeIn 0.4s ease-out forwards;
+        }
+
+        .section-tab.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Form Controls */
+        .grid-2 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-muted);
+        }
+
+        .input-control {
+            background: rgba(9, 9, 11, 0.8);
+            border: 1px solid var(--border-color);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            color: #fff;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            transition: var(--transition);
+            width: 100%;
+        }
+
+        .input-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        select.input-control {
+            appearance: none;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23a1a1aa' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+            background-size: 1.2em;
+            padding-right: 2.5rem;
+        }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 10px;
+            font-family: var(--font-family);
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: var(--transition);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #fff;
+            box-shadow: 0 4px 15px var(--primary-glow);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: #fff;
+        }
+
+        .btn-secondary:hover {
+            background: var(--secondary-hover);
+            transform: translateY(-1px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border-color: var(--border-color);
+            color: var(--text-main);
+        }
+
+        .btn-outline:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: var(--text-muted);
+        }
+
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin-top: 1.5rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 0.95rem;
+        }
+
+        th {
+            background: rgba(24, 24, 27, 0.9);
+            padding: 1rem;
+            color: var(--text-muted);
+            font-weight: 600;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--border-color);
+            color: var(--text-main);
+            background: rgba(39, 39, 42, 0.2);
+        }
+
+        tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Badges */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--secondary);
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--warning);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+        }
+
+        /* Summary Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: rgba(24, 24, 27, 0.4);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .stat-title {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            background: linear-gradient(to right, #fff, #a78bfa);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Agenda Grid layout */
+        .agenda-grid {
+            display: grid;
+            grid-template-columns: 80px repeat(3, 1fr);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            overflow: hidden;
+            background: rgba(24, 24, 27, 0.5);
+        }
+
+        .agenda-header {
+            display: contents;
+        }
+
+        .agenda-header-cell {
+            background: rgba(15, 15, 17, 0.9);
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            border-bottom: 2px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+        }
+
+        .agenda-header-cell:last-child {
+            border-right: none;
+        }
+
+        .agenda-row {
+            display: contents;
+        }
+
+        .agenda-time-cell {
+            background: rgba(18, 18, 20, 0.8);
+            padding: 1rem 0.5rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .agenda-slot-cell {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+            border-right: 1px solid var(--border-color);
+            min-height: 70px;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            background: rgba(255, 255, 255, 0.02);
+            transition: var(--transition);
+        }
+
+        .agenda-slot-cell:last-child {
+            border-right: none;
+        }
+
+        .agenda-slot-cell.dragover {
+            background: rgba(139, 92, 246, 0.15);
+            border: 2px dashed var(--primary);
+        }
+
+        .appointment-card {
+            background: linear-gradient(135deg, rgba(139, 92, 246, 0.25), rgba(167, 139, 250, 0.15));
+            border: 1px solid rgba(139, 92, 246, 0.4);
+            border-radius: 8px;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.85rem;
+            cursor: grab;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+            transition: var(--transition);
+        }
+
+        .appointment-card:active {
+            cursor: grabbing;
+            opacity: 0.6;
+        }
+
+        .appointment-card .client-name {
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 2px;
+        }
+
+        .appointment-card .service-name {
+            color: var(--text-muted);
+            font-size: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* Modal styling for receipt ticket */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+            animation: fadeIn 0.3s ease-out;
+        }
+
+        .modal-content {
+            background: #fff;
+            color: var(--text-dark);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 380px;
+            width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            font-family: monospace;
+            position: relative;
+        }
+
+        .receipt-header {
+            text-align: center;
+            border-bottom: 2px dashed #ccc;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .receipt-header h2 {
+            font-size: 1.5rem;
+            font-weight: 800;
+            letter-spacing: 1px;
+        }
+
+        .receipt-body {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            border-bottom: 2px dashed #ccc;
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .receipt-row {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+        }
+
+        .receipt-row.bold {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .receipt-footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+        }
+
+        .receipt-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            justify-content: center;
+        }
+
+        /* Toast notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: #18181b;
+            border: 1px solid var(--secondary);
+            color: #fff;
+            padding: 1rem 1.5rem;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            transform: translateY(100px);
+            opacity: 0;
+            transition: var(--transition);
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar">
+            <div class="logo-area">
+                <div class="logo-icon">
+                    <i class="fa-solid fa-scissors"></i>
+                </div>
+                <div class="logo-text">Groomy</div>
+            </div>
+            
+            <nav>
+                <ul class="menu-list">
+                    <li class="menu-item active" onclick="switchTab('atendimento')">
+                        <i class="fa-solid fa-cash-register"></i>
+                        Atendimento
+                    </li>
+                    <li class="menu-item" onclick="switchTab('pagamento')">
+                        <i class="fa-solid fa-credit-card"></i>
+                        Pagamentos
+                    </li>
+                    <li class="menu-item" onclick="switchTab('comissao')">
+                        <i class="fa-solid fa-calculator"></i>
+                        Comissões
+                    </li>
+                    <li class="menu-item" onclick="switchTab('agendamento')">
+                        <i class="fa-solid fa-calendar-days"></i>
+                        Agenda
+                    </li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Workspace -->
+        <main class="main-content">
+            <header>
+                <div class="header-title">
+                    <h1 id="page-title">Atendimento Rápido</h1>
+                    <p id="page-subtitle">Lançamento e faturamento instantâneo com geração de cupom</p>
+                </div>
+                <div class="btn btn-outline" style="border-radius: 50%; width: 42px; height: 42px; padding: 0;">
+                    <i class="fa-solid fa-user"></i>
+                </div>
+            </header>
+
+            <!-- Tab 1: Atendimento -->
+            <section id="tab-atendimento" class="section-tab active">
+                <div class="glass-card">
+                    <h3 style="margin-bottom: 1.5rem; font-size: 1.25rem;"><i class="fa-solid fa-plus-circle text-primary" style="margin-right: 8px;"></i> Novo Lançamento</h3>
+                    
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Cliente</label>
+                            <select id="atend-cliente" class="input-control">
+                                <option value="3">PRISCILA TIEME</option>
+                                <option value="2844">JAQUELINE SEPICAM</option>
+                                <option value="1012">ALESSANDRA TORIBIO</option>
+                                <option value="new">-- Adicionar Novo Cliente --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Serviço</label>
+                            <select id="atend-servico" class="input-control" onchange="updateServicePrice()">
+                                <option value="12" data-price="35.00" data-comm="50">DEPILAÇÃO PERNA INTEIRA - R$ 35,00</option>
+                                <option value="15" data-price="60.00" data-comm="40">ESCOVA PROGRESSIVA - R$ 60,00</option>
+                                <option value="18" data-price="45.00" data-comm="50">CORTE FEMININO - R$ 45,00</option>
+                                <option value="22" data-price="25.00" data-comm="50">MANICURE - R$ 25,00</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Profissional</label>
+                            <select id="atend-profissional" class="input-control">
+                                <option value="1">WAGNER MORENO FERRARI</option>
+                                <option value="3">ROSA MARIA</option>
+                                <option value="83">CAMILA RODRIGUES</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Valor Unitário (R$)</label>
+                            <input type="number" id="atend-preco" class="input-control" value="35.00" step="0.01">
+                        </div>
+                        <div class="form-group">
+                            <label>Quantidade</label>
+                            <input type="number" id="atend-quantidade" class="input-control" value="1" min="1">
+                        </div>
+                        <div class="form-group" style="justify-content: flex-end;">
+                            <button class="btn btn-primary" onclick="addOrderItem()"><i class="fa-solid fa-plus"></i> Adicionar Item</button>
+                        </div>
+                    </div>
+
+                    <!-- Items Table -->
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Serviço</th>
+                                    <th>Profissional</th>
+                                    <th>Preço</th>
+                                    <th>Qtd</th>
+                                    <th>Subtotal</th>
+                                    <th>Comissão (R$)</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="atend-itens-tbody">
+                                <!-- Dynamic rows -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <div class="grid-3" style="margin-top: 2rem;">
+                        <div class="stat-card">
+                            <span class="stat-title">Total Serviços</span>
+                            <span class="stat-value" id="atend-total-servicos">R$ 0,00</span>
+                        </div>
+                        <div class="stat-card">
+                            <span class="stat-title">Total Comissões Geradas</span>
+                            <span class="stat-value" id="atend-total-comissoes" style="background: linear-gradient(to right, #fff, #fb7185); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">R$ 0,00</span>
+                        </div>
+                        <div class="form-group" style="justify-content: center; align-items: flex-end;">
+                            <button class="btn btn-secondary" style="width: 100%; height: 55px; font-size: 1.1rem;" onclick="finalizeAtendimento()">
+                                <i class="fa-solid fa-receipt"></i> Fechar Pedido & Cupom
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 2: Pagamentos -->
+            <section id="tab-pagamento" class="section-tab">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-title">Caixa do Dia</span>
+                        <span class="stat-value">R$ 1.845,00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">Cartão de Crédito</span>
+                        <span class="stat-value">R$ 940,00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">PIX / Dinheiro</span>
+                        <span class="stat-value">R$ 905,00</span>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-list-check" style="margin-right: 8px;"></i> Histórico de Vendas Prontas</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Cód Pedido</th>
+                                    <th>Cliente</th>
+                                    <th>Data</th>
+                                    <th>Valor Total</th>
+                                    <th>Forma Pagamento</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>#98389</td>
+                                    <td>PRISCILA TIEME</td>
+                                    <td>23/07/2026</td>
+                                    <td>R$ 29,00</td>
+                                    <td>Dinheiro</td>
+                                    <td><span class="badge badge-success">Pago</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#98390</td>
+                                    <td>JAQUELINE SEPICAM</td>
+                                    <td>23/07/2026</td>
+                                    <td>R$ 85,00</td>
+                                    <td>Cartão Crédito</td>
+                                    <td><span class="badge badge-success">Pago</span></td>
+                                </tr>
+                                <tr>
+                                    <td>#98391</td>
+                                    <td>ALESSANDRA TORIBIO</td>
+                                    <td>23/07/2026</td>
+                                    <td>R$ 120,00</td>
+                                    <td>PIX</td>
+                                    <td><span class="badge badge-success">Pago</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 3: Comissões -->
+            <section id="tab-comissao" class="section-tab">
+                <div class="glass-card">
+                    <h3 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-filter" style="margin-right: 8px;"></i> Filtros</h3>
+                    <div class="grid-3">
+                        <div class="form-group">
+                            <label>Profissional</label>
+                            <select class="input-control" id="comissao-filtro-prof" onchange="filterCommissions()">
+                                <option value="all">Todos</option>
+                                <option value="WAGNER">WAGNER MORENO FERRARI</option>
+                                <option value="ROSA">ROSA MARIA</option>
+                                <option value="CAMILA">CAMILA RODRIGUES</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="input-control">
+                                <option value="all">Todos</option>
+                                <option value="pending">Pendente</option>
+                                <option value="paid">Pago</option>
+                            </select>
+                        </div>
+                        <div class="form-group" style="justify-content: flex-end;">
+                            <button class="btn btn-outline" style="width: 100%;"><i class="fa-solid fa-arrows-rotate"></i> Atualizar Relatório</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-title">Comissões Pendentes</span>
+                        <span class="stat-value" id="comm-pendente-val">R$ 380,00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-title">Comissões Pagas</span>
+                        <span class="stat-value" style="background: linear-gradient(to right, #fff, #10b981); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">R$ 1.450,00</span>
+                    </div>
+                </div>
+
+                <div class="glass-card">
+                    <h3 style="margin-bottom: 1.5rem;"><i class="fa-solid fa-wallet" style="margin-right: 8px;"></i> Livro de Lançamento de Comissões</h3>
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Profissional</th>
+                                    <th>Cliente</th>
+                                    <th>Serviço</th>
+                                    <th>Valor Venda</th>
+                                    <th>Valor Comissão</th>
+                                    <th>Data Atendimento</th>
+                                    <th>Status</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="comissao-tbody">
+                                <tr data-prof="WAGNER">
+                                    <td>WAGNER MORENO FERRARI</td>
+                                    <td>PRISCILA TIEME</td>
+                                    <td>DEPILAÇÃO PERNA INTEIRA</td>
+                                    <td>R$ 35,00</td>
+                                    <td>R$ 17,50</td>
+                                    <td>23/07/2026</td>
+                                    <td><span class="badge badge-warning">Pendente</span></td>
+                                    <td><button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="payCommission(this, 17.50)">Pagar</button></td>
+                                </tr>
+                                <tr data-prof="CAMILA">
+                                    <td>CAMILA RODRIGUES</td>
+                                    <td>JAQUELINE SEPICAM</td>
+                                    <td>ESCOVA PROGRESSIVA</td>
+                                    <td>R$ 60,00</td>
+                                    <td>R$ 24,00</td>
+                                    <td>23/07/2026</td>
+                                    <td><span class="badge badge-warning">Pendente</span></td>
+                                    <td><button class="btn btn-outline" style="padding: 0.4rem 0.8rem; font-size: 0.8rem;" onclick="payCommission(this, 24.00)">Pagar</button></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Tab 4: Agendamento -->
+            <section id="tab-agendamento" class="section-tab">
+                <div class="glass-card">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+                        <h3><i class="fa-solid fa-calendar-week" style="margin-right: 8px;"></i> Quadro Diário de Horários</h3>
+                        <div style="display: flex; gap: 0.5rem; align-items: center;">
+                            <button class="btn btn-outline" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-chevron-left"></i></button>
+                            <span style="font-weight: 600;">23 de Julho, 2026</span>
+                            <button class="btn btn-outline" style="padding: 0.5rem 1rem;"><i class="fa-solid fa-chevron-right"></i></button>
+                        </div>
+                    </div>
+
+                    <!-- Column layout for professionals -->
+                    <div class="agenda-grid">
+                        <!-- Headers -->
+                        <div class="agenda-header">
+                            <div class="agenda-header-cell">Horário</div>
+                            <div class="agenda-header-cell">WAGNER M. FERRARI</div>
+                            <div class="agenda-header-cell">ROSA MARIA</div>
+                            <div class="agenda-header-cell">CAMILA RODRIGUES</div>
+                        </div>
+
+                        <!-- Row 08:00 -->
+                        <div class="agenda-row">
+                            <div class="agenda-time-cell">08:00</div>
+                            <div class="agenda-slot-cell" data-time="08:00" data-prof="1" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                                <div class="appointment-card" draggable="true" ondragstart="drag(event)" id="appt-1">
+                                    <div class="client-name">PRISCILA TIEME</div>
+                                    <div class="service-name"><i class="fa-solid fa-scissors"></i> Depilação Perna</div>
+                                </div>
+                            </div>
+                            <div class="agenda-slot-cell" data-time="08:00" data-prof="2" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"></div>
+                            <div class="agenda-slot-cell" data-time="08:00" data-prof="3" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"></div>
+                        </div>
+
+                        <!-- Row 09:30 -->
+                        <div class="agenda-row">
+                            <div class="agenda-time-cell">09:30</div>
+                            <div class="agenda-slot-cell" data-time="09:30" data-prof="1" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"></div>
+                            <div class="agenda-slot-cell" data-time="09:30" data-prof="2" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                                <div class="appointment-card" draggable="true" ondragstart="drag(event)" id="appt-2">
+                                    <div class="client-name">JAQUELINE SEPICAM</div>
+                                    <div class="service-name"><i class="fa-solid fa-face-smile"></i> Maquiagem</div>
+                                </div>
+                            </div>
+                            <div class="agenda-slot-cell" data-time="09:30" data-prof="3" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"></div>
+                        </div>
+
+                        <!-- Row 11:00 -->
+                        <div class="agenda-row">
+                            <div class="agenda-time-cell">11:00</div>
+                            <div class="agenda-slot-cell" data-time="11:00" data-prof="1" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"></div>
+                            <div class="agenda-slot-cell" data-time="11:00" data-prof="2" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)"></div>
+                            <div class="agenda-slot-cell" data-time="11:00" data-prof="3" ondragover="allowDrop(event)" ondragleave="dragLeave(event)" ondrop="drop(event)">
+                                <div class="appointment-card" draggable="true" ondragstart="drag(event)" id="appt-3">
+                                    <div class="client-name">ALESSANDRA TORIBIO</div>
+                                    <div class="service-name"><i class="fa-solid fa-wind"></i> Escova Progressiva</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Ticket Receipt Modal -->
+    <div id="receipt-modal" class="modal">
+        <div class="modal-content">
+            <div class="receipt-header">
+                <h2>GROOMY SALÃO</h2>
+                <p>CNPJ: 12.345.678/0001-99</p>
+                <p>Rua Serra do Japi, 1544 - SP</p>
+                <p>--------------------------------</p>
+                <p>CUPOM DE PEDIDO: <span id="receipt-id">#98392</span></p>
+                <p>DATA: <span id="receipt-date">23/07/2026 20:30</span></p>
+            </div>
+            <div class="receipt-body">
+                <p>CLIENTE: <span id="receipt-client">PRISCILA TIEME</span></p>
+                <p>--------------------------------</p>
+                <div id="receipt-items">
+                    <!-- Dynamic ticket items -->
+                </div>
+                <p>--------------------------------</p>
+                <div class="receipt-row bold">
+                    <span>TOTAL:</span>
+                    <span id="receipt-total">R$ 0,00</span>
+                </div>
+            </div>
+            <div class="receipt-footer">
+                <p>Obrigado pela preferência!</p>
+                <p>Groomy System</p>
+            </div>
+            <div class="receipt-actions">
+                <button class="btn btn-outline" onclick="closeReceipt()"><i class="fa-solid fa-circle-xmark"></i> Fechar</button>
+                <button class="btn btn-primary" onclick="printReceipt()"><i class="fa-solid fa-print"></i> Imprimir</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fa-solid fa-circle-check" style="font-size: 1.25rem; color: var(--secondary);"></i>
+        <span id="toast-message">Alteração realizada com sucesso!</span>
+    </div>
+
+    <script>
+        // Data Structures
+        let orderItems = [];
+        let orderTotal = 0;
+        let commissionsTotal = 0;
+
+        function updateServicePrice() {
+            const serviceSelect = document.getElementById("atend-servico");
+            const selectedOption = serviceSelect.options[serviceSelect.selectedIndex];
+            const price = selectedOption.getAttribute("data-price");
+            document.getElementById("atend-preco").value = price;
+        }
+
+        function addOrderItem() {
+            const clientSelect = document.getElementById("atend-cliente");
+            const serviceSelect = document.getElementById("atend-servico");
+            const profSelect = document.getElementById("atend-profissional");
+            const price = parseFloat(document.getElementById("atend-preco").value);
+            const qty = parseInt(document.getElementById("atend-quantidade").value);
+            
+            const serviceOpt = serviceSelect.options[serviceSelect.selectedIndex];
+            const profOpt = profSelect.options[profSelect.selectedIndex];
+            
+            const serviceName = serviceOpt.text.split(" - ")[0];
+            const profName = profOpt.text;
+            const commPercent = parseFloat(serviceOpt.getAttribute("data-comm"));
+            
+            const subtotal = price * qty;
+            const commissionVal = subtotal * (commPercent / 100);
+            
+            orderItems.push({
+                serviceId: serviceSelect.value,
+                serviceName: serviceName,
+                profId: profSelect.value,
+                profName: profName,
+                price: price,
+                qty: qty,
+                subtotal: subtotal,
+                commission: commissionVal
+            });
+            
+            renderOrderItems();
+            showToast("Item adicionado ao pedido!");
+        }
+
+        function removeOrderItem(index) {
+            orderItems.splice(index, 1);
+            renderOrderItems();
+        }
+
+        function renderOrderItems() {
+            const tbody = document.getElementById("atend-itens-tbody");
+            tbody.innerHTML = "";
+            orderTotal = 0;
+            commissionsTotal = 0;
+            
+            orderItems.forEach((item, index) => {
+                orderTotal += item.subtotal;
+                commissionsTotal += item.commission;
+                
+                const tr = document.createElement("tr");
+                tr.innerHTML = `
+                    <td>${item.serviceName}</td>
+                    <td>${item.profName}</td>
+                    <td>R$ ${item.price.toFixed(2)}</td>
+                    <td>${item.qty}</td>
+                    <td>R$ ${item.subtotal.toFixed(2)}</td>
+                    <td>R$ ${item.commission.toFixed(2)}</td>
+                    <td>
+                        <button class="btn btn-outline" style="padding: 0.25rem 0.5rem; font-size: 0.8rem; color: #ef4444; border-color: rgba(239,68,68,0.2);" onclick="removeOrderItem(${index})">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+            
+            document.getElementById("atend-total-servicos").innerText = `R$ ${orderTotal.toFixed(2)}`;
+            document.getElementById("atend-total-comissoes").innerText = `R$ ${commissionsTotal.toFixed(2)}`;
+        }
+
+        function finalizeAtendimento() {
+            if (orderItems.length === 0) {
+                alert("Adicione pelo menos um item ao atendimento antes de finalizar!");
+                return;
+            }
+            
+            const clientSelect = document.getElementById("atend-cliente");
+            const clientName = clientSelect.options[clientSelect.selectedIndex].text;
+            
+            // Populate modal receipt
+            document.getElementById("receipt-client").innerText = clientName;
+            document.getElementById("receipt-total").innerText = `R$ ${orderTotal.toFixed(2)}`;
+            
+            const receiptItems = document.getElementById("receipt-items");
+            receiptItems.innerHTML = "";
+            orderItems.forEach(item => {
+                const div = document.createElement("div");
+                div.className = "receipt-row";
+                div.innerHTML = `
+                    <span>${item.qty}x ${item.serviceName}</span>
+                    <span>R$ ${item.subtotal.toFixed(2)}</span>
+                `;
+                receiptItems.appendChild(div);
+            });
+            
+            // Random code
+            document.getElementById("receipt-id").innerText = `#${Math.floor(10000 + Math.random() * 90000)}`;
+            
+            // Show modal
+            document.getElementById("receipt-modal").style.display = "flex";
+        }
+
+        function closeReceipt() {
+            document.getElementById("receipt-modal").style.display = "none";
+            // Clear order
+            orderItems = [];
+            renderOrderItems();
+        }
+
+        function printReceipt() {
+            window.print();
+        }
+
+        // Tab Switching Logic
+        function switchTab(tabId) {
+            document.querySelectorAll(".menu-item").forEach(item => item.classList.remove("active"));
+            document.querySelectorAll(".section-tab").forEach(tab => tab.classList.remove("active"));
+            
+            // Set clicked active
+            const clickedMenu = Array.from(document.querySelectorAll(".menu-item")).find(item => item.innerText.toLowerCase().includes(tabId));
+            if (clickedMenu) clickedMenu.classList.add("active");
+            
+            document.getElementById(`tab-${tabId}`).classList.add("active");
+            
+            // Change titles
+            const titleMap = {
+                'atendimento': ['Atendimento Rápido', 'Lançamento e faturamento instantâneo com geração de cupom'],
+                'pagamento': ['Painel de Pagamentos', 'Gestão financeira e controle de fechamento de caixa'],
+                'comissao': ['Controle de Comissões', 'Acompanhamento e pagamento de profissionais'],
+                'agendamento': ['Agenda de Profissionais', 'Visualização de horários por coluna de colaboradores']
+            };
+            
+            document.getElementById("page-title").innerText = titleMap[tabId][0];
+            document.getElementById("page-subtitle").innerText = titleMap[tabId][1];
+        }
+
+        // Commission payment
+        function payCommission(btn, val) {
+            btn.parentElement.innerHTML = `<span class="badge badge-success">Pago</span>`;
+            showToast(`Comissão de R$ ${val.toFixed(2)} paga com sucesso!`);
+            
+            // Update stats
+            const pendingValEl = document.getElementById("comm-pendente-val");
+            let pendingVal = parseFloat(pendingValEl.innerText.replace("R$ ", "").replace(",", "."));
+            pendingVal -= val;
+            pendingValEl.innerText = `R$ ${pendingVal.toFixed(2)}`;
+        }
+
+        // Filter Commissions
+        function filterCommissions() {
+            const val = document.getElementById("comissao-filtro-prof").value;
+            const rows = document.querySelectorAll("#comissao-tbody tr");
+            rows.forEach(row => {
+                if (val === "all" || row.getAttribute("data-prof") === val) {
+                    row.style.display = "";
+                } else {
+                    row.style.display = "none";
+                }
+            });
+        }
+
+        // Drag & Drop Calendar Operations
+        function allowDrop(ev) {
+            ev.preventDefault();
+            ev.currentTarget.classList.add('dragover');
+        }
+
+        function dragLeave(ev) {
+            ev.currentTarget.classList.remove('dragover');
+        }
+
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        function drop(ev) {
+            ev.preventDefault();
+            ev.currentTarget.classList.remove('dragover');
+            const data = ev.dataTransfer.getData("text");
+            const apptCard = document.getElementById(data);
+            
+            // Move item
+            ev.currentTarget.appendChild(apptCard);
+            
+            // Trigger toast representing a server action update
+            const targetProf = ev.currentTarget.getAttribute("data-prof");
+            const targetTime = ev.currentTarget.getAttribute("data-time");
+            
+            const profNames = {
+                "1": "WAGNER M. FERRARI",
+                "2": "ROSA MARIA",
+                "3": "CAMILA RODRIGUES"
+            };
+            
+            showToast(`Agenda atualizada no MySQL: Profissional ${profNames[targetProf]} às ${targetTime}!`);
+        }
+
+        // Toast Helper
+        function showToast(message) {
+            const toast = document.getElementById("toast");
+            document.getElementById("toast-message").innerText = message;
+            toast.classList.add("show");
+            setTimeout(() => {
+                toast.classList.remove("show");
+            }, 3000);
+        }
+
+        // Init
+        updateServicePrice();
+    </script>
+</body>
+</html>

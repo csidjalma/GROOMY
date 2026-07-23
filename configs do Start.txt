@@ -1,0 +1,72 @@
+# ESPECIFICAÇÃO DE MIGRAÇÃO: VFP (DBF) PARA NEXT.JS + MYSQL
+
+## 1. OBJETIVO DO PROJETO
+Migrar o núcleo operacional de uma aplicação legada em VisualFoxPro (DBF) para uma aplicação Web moderna em Next.js (App Router), TypeScript e MySQL (utilizando Prisma ORM).
+O foco principal e EXCLUSIVO desta etapa é:
+1. Migração segura dos dados dos DBFs para o MySQL.
+2. Módulo de Agendamento dos Profissionais.
+3. Módulo de Atendimento ao Cliente (Lançamento rápido) com geração automática de Comissões.
+
+
+local do projeto em VisualFoxPro: "G:\Meu Drive\VisualFoxPro\Connection"  banco de dados: /Dados
+---
+
+## 2. ETAPA 1: SCRIPT DE MIGRAÇÃO DE DADOS (ETL: DBF -> MySQL)
+Gere um script em Node.js (usando a biblioteca `dbf-reader` ou `node-dbf`) ou Python (`dbfread`) para extrair os dados das tabelas legadas e inserir no MySQL via Prisma.
+
+### Mapeamento das Tabelas Principais:
+- **Clientes:** DBF Legado (`CLIENTES.DBF`) -> Tabela MySQL `clientes`
+
+*Regra de ETL:* Lide com caracteres especiais (fazer decode de CP850/Windows-1252 para UTF-8), trate datas inválidas do VFP (ex: `00/00/0000` deve virar `NULL`) e garanta que os IDs legados sejam preservados para manter o histórico de relacionamentos.
+
+---
+
+## 3. ETAPA 2: MODELAGEM DO BANCO DE DADOS (MySQL)
+Não quero modelagem com prisma, deixa o modelo extremamente lento até para testes é ruim.
+
+Vamos criar uma base de dados em VPS1 no mesmo lugar onde está hoje o "devcs_banco_cnpj" , vamos criar "devcs_banco_groomy" baseando osm acesse nas credenciais: "C:\AI-PROJECTS\_config\credentials.env"
+
+
+4. ETAPA 3: REGRAS DE NEGÓCIO E OTIMIZAÇÃO DO ATENDIMENTO
+A) Lançamento Ágil de Atendimento + Cálculo de Comissão (Server Action)
+Crie uma Server Action ou Rota de API no Next.js para finalizar o atendimento.
+Ela deve executar em uma transação atômica (prisma.$transaction):
+
+Atualizar o status do Appointment para COMPLETED.
+
+Criar o registro da venda na tabela Order e os itens em OrderItem.
+
+Calcular a comissão do profissional:
+
+Buscar o valor final cobrado por cada serviço.
+
+Aplicar a porcentagem de comissão do Serviço (se houver) ou a porcentagem padrão do Profissional.
+
+Criar os registros na tabela Comissões vinculados à ordem e ao profissional com status PENDING.
+
+B) UX da Tela de Atendimento (Foco em Velocidade de Teclado)
+Desenvolva uma interface no React usando Tailwind CSS / shadcn/ui.
+
+A tela de lançamento deve permitir seleção rápida por teclado (teclas Enter para avançar, Tab, e seletores com busca rápida de cliente/serviço).
+
+O cálculo do total da comissão gerada para aquele atendimento deve ser exibido em tempo real na tela antes do fechamento.
+
+C) Agenda Otimizada dos Profissionais
+Crie um componente de grade/agenda por colunas (uma coluna por Profissional no dia selecionado).
+
+Permita alterar o horário ou profissional via arrastar e soltar (Drag & Drop), disparando uma atualização rápida no banco de dados via Server Action sem recarregar a página.
+
+5. ENTREGÁVEIS ESPERADOS
+Script executável para importar os dados do DBF antigo para o MySQL.
+
+Server Action com a regra de negócio do cálculo de comissão em transação atômica.
+
+Componente React para o Agendamento e para a Tela de Atendimento Rápido.
+
+
+---
+
+### 💡 Dica para quando for passar isso pro Agente:
+Mande primeiro **apenas a ETAPA 1 e 2** para ele gerar o script de banco e importar seus dados com sucesso. Assim que os dados estiverem rodando bonitinhos no MySQL local, você manda ele fazer a **ETAPA 3 e 4** (a interface e as Server Actions do Next.js). 
+
+Dividir o trabalho do agente em duas etapas evita que ele estoure o limite de contexto e comece a inventar moda no meio do código!
