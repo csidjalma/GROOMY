@@ -39,8 +39,10 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
   - `sc_log`: Auditoria detalhada de ações dos usuários com retenção e trava de exclusão física.
 - **Tabela de Configurações Dinâmicas**:
   - `tbl_config`: Armazena parâmetros globais do sistema (`evolution_api_url`, `evolution_api_token`, `evolution_instance`, `app_timezone`).
-- **Estrutura de Colunas:** **Paridade Exata 1:1** com o banco FoxPro (caixa baixa, sem acentos nem sufixos `_legado`). Nomes originais preservados na íntegra: `pe_codigo`, `cl_codigo`, `pf_codigo`, `se_codigo`, `at_codigo`, `ia_codigo`, `co_codigo`, `po_codigo`, `ca_codigo`, `ba_codigo`, `ch_codigo`, etc.
+- **Estrutura de Colunas & Sequenciamento:** **Paridade Exata 1:1** com o banco FoxPro (caixa baixa, sem acentos nem sufixos `_legado`). As chaves primárias numéricas (`cl_codigo`, `pf_codigo`, `se_codigo`, `po_codigo`, `at_codigo`, `de_codigo`, `ba_codigo`, `pe_codigo`) possuem **`AUTO_INCREMENT` ativo e configurado dinamicamente para `MAX + 1`**, garantindo continuidade histórica e que novos cadastros não colidam com o passado.
+- **Manual de Tombamento de Dados:** Documentação oficial completa registrada em [docs/MANUAL_DE_MIGRADOC_ETL.md](file:///C:/AI-PROJECTS/GROOMY/docs/MANUAL_DE_MIGRADOC_ETL.md).
 - **Total Migrado:** Mais de 920.000 registros re-importados e validados em lote.
+
 
 ---
 
