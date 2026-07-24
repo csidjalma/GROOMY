@@ -1,36 +1,89 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Groomy ERP — Sistema Moderno de Gestão de Salões de Beleza
 
-## Getting Started
+![Next.js](https://img.shields.io/badge/Next.js-16.2.11-black?style=for-the-badge&logo=next.js)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.0-blue?style=for-the-badge&logo=typescript)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-v4-06B6D4?style=for-the-badge&logo=tailwindcss)
+![MySQL](https://img.shields.io/badge/MySQL-8.0-4479A1?style=for-the-badge&logo=mysql)
 
-First, run the development server:
+O **Groomy** é a modernização completa do sistema legado de gestão de salões de beleza (FoxPro CSI). Ele combina uma experiência de usuário responsiva e moderna com alta performance, mantendo a precisão matemática das regras originais de comissões, rateio proporcional e segurança granular.
 
+---
+
+## 🌟 Principais Módulos & Funcionalidades
+
+### 📱 1. Módulo Móvel — Pedido Expresso (Profissionais)
+*   Interface otimizada para smartphones rodando diretamente nos celulares dos funcionários.
+*   Lançamento rápido por número de **Ficha do Cliente** (ex: 2798) e seleção de serviço.
+*   Autenticação e disparo de convite seguro via WhatsApp (**EvolutionAPI**).
+*   Trava de segurança: cada colaborador lança serviços exclusivamente para a sua conta.
+
+### 💳 2. Atendimento Rápido & Checkout (Caixa)
+*   Consolidação automática dos itens lançados nas Fichas.
+*   Cálculo automático e proporcional do **Fator de Desconto** e **Fator de Cartão** sobre as comissões:
+    $$\text{Fator Cartão} = 1 - \left(\frac{\text{Taxa Cartão}}{\text{Total Pago}}\right)$$
+    $$\text{Fator Desconto} = 1 - \left(\frac{\text{Desconto}}{\text{Subtotal}}\right)$$
+*   Transação atômica em MySQL para fechamento da venda e geração dos extratos de comissão.
+
+### 🖨️ 3. Impressão de Cupom Não Fiscal
+*   Gerador de recibos térmicos em bobinas de **58mm / 80mm** (fonte monoespaçada 35–48 colunas).
+*   Suporte a impressão silenciosa instantânea via navegação em modo Kiosk (`--kiosk-printing`) e comandos brutos ESC/POS para guilhotina e gaveta de dinheiro.
+
+### 🛡️ 4. Segurança RBAC & Auditoria (`sec_users`, `sec_groups`, `sc_log`)
+*   Controle de acesso granular por grupo de trabalho (RBAC: Acessar, Inserir, Alterar, Excluir).
+*   Criptografia compatível com o legado FoxPro e hash MD5 para senhas.
+*   Rastreabilidade total na tabela `sc_log` com bloqueio de exclusão física para contas que possuem histórico de auditoria.
+*   Etiqueta de código discreto para suporte visual em todas as telas (ex: `FRM-LGN`, `FRM-USR`, `FRM-WTP`).
+
+### 💬 5. Painel de Integração WhatsApp EvolutionAPI (`/setup/whatsapp`)
+*   Interface gráfica para pareamento e leitura de QR Code em tempo real.
+*   Polling automático para detecção de pareamento.
+*   Persistência dinâmica das credenciais na tabela `tbl_config`.
+
+### 📊 6. Central de Relatórios (17 Módulos Mapeados)
+*   Migração de todos os 17 relatórios legados (`.FRX`) para telas web com exportação em PDF, Excel (.xlsx) e ações diretas de marketing no WhatsApp (como o Relatório de Aniversariantes).
+
+---
+
+## 🛠️ Stack Tecnológica
+
+*   **Frontend:** Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS v4, Lucide Icons.
+*   **Backend:** Next.js Route Handlers & Server Actions.
+*   **Banco de Dados:** MySQL 8.0 (Docker na VPS1 via SSH Tunneling e Pool `mysql2/promise`).
+*   **Integrações:** EvolutionAPI (WhatsApp Webhook/REST API).
+*   **ETL:** Python 3.12 com `dbfread` e `sshtunnel` (migração de +920.000 registros).
+
+---
+
+## 🚀 Como Executar o Projeto Localmente
+
+### 1. Pré-requisitos
+*   Node.js v18.x ou superior.
+*   npm / pnpm / yarn.
+
+### 2. Instalação de Dependências
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone git@github.com:csidjalma/GROOMY.git
+cd GROOMY
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 3. Variáveis de Ambiente (`.env.local`)
+Crie o arquivo `.env.local` na raiz com as credenciais do banco:
+```env
+DB_HOST=127.0.0.1
+DB_PORT=3308
+DB_USER=csi_super
+DB_PASSWORD=SuaSenhaAqui
+DB_NAME=devcs_banco_groomy
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### 4. Executando o Servidor de Desenvolvimento
+```bash
+npm run dev
+```
+Acesse `http://localhost:3000` no seu navegador.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+---
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 📄 Licença e Suporte
+Desenvolvido por **CSI Sistemas** (Djalma Julião). Todos os direitos reservados.
