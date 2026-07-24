@@ -57,9 +57,11 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 
 
 ### Etapa 3: Módulo Movel - Pedido Expresso (Profissionais)
+- [x] Tela de Pareamento e Autenticação do WhatsApp com a EvolutionAPI (`/setup/whatsapp`) com suporte visual (`FRM-WTP`)
 - [ ] Fluxo de Convite e Cadastro via EvolutionAPI (WhatsApp):
   - Recepção gera convite ➔ Dispara mensagem WhatsApp com URL + Token único ➔ Profissional realiza cadastro e valida celular.
 - [ ] Tela Mobile do Profissional (Foco em Usabilidade e Agilidade):
+
   - Campo de Ficha (Card número)
   - Seleção de Serviço (exibe comissões/preços associados)
   - Lançamento rápido direto na tabela `pedidos` (com status pendente/aberto).
