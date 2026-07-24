@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Proposta Comercial Executiva — Groomy ERP</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-dark: #0f172a;
+      --bg-card: #1e293b;
+      --bg-card-hover: #334155;
+      --accent-gold: #f59e0b;
+      --accent-gold-light: #fbbf24;
+      --accent-blue: #3b82f6;
+      --accent-emerald: #10b981;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: rgba(255, 255, 255, 0.1);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 40px 20px;
+    }
+
+    .container {
+      max-width: 1000px;
+      margin: 0 auto;
+    }
+
+    /* Print action bar */
+    .action-bar {
+      display: flex;
+      justify-content: flex-end;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .btn-print {
+      background: linear-gradient(135deg, var(--accent-gold), #d97706);
+      color: #000;
+      font-weight: 700;
+      font-size: 14px;
+      padding: 12px 24px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px rgba(245, 158, 11, 0.3);
+      transition: all 0.2s ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-print:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+    }
+
+    /* Header Card */
+    .header-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 40px;
+      margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+    }
+
+    .header-card::before {
+      content: '';
+      position: absolute;
+      top: 0; right: 0; width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(245, 158, 11, 0.15) 0%, rgba(0, 0, 0, 0) 70%);
+      pointer-events: none;
+    }
+
+    .proposal-badge {
+      display: inline-block;
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--accent-gold-light);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      margin-bottom: 16px;
+    }
+
+    .main-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 38px;
+      font-weight: 800;
+      line-height: 1.2;
+      background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 12px;
+    }
+
+    .subtitle {
+      color: var(--text-muted);
+      font-size: 16px;
+      max-width: 750px;
+      margin-bottom: 32px;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 20px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .meta-item {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .meta-label {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .meta-val {
+      font-size: 15px;
+      font-weight: 600;
+      color: #fff;
+      margin-top: 4px;
+    }
+
+    /* Section titles */
+    .section-header {
+      margin: 40px 0 24px 0;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 24px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .section-title::before {
+      content: '';
+      display: inline-block;
+      width: 4px;
+      height: 24px;
+      background: var(--accent-gold);
+      border-radius: 2px;
+    }
+
+    /* Grid of Scope Cards */
+    .scope-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 28px;
+      transition: transform 0.2s ease, border-color 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(245, 158, 11, 0.4);
+    }
+
+    .card-icon {
+      width: 48px;
+      height: 48px;
+      background: rgba(245, 158, 11, 0.1);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      margin-bottom: 16px;
+      border: 1px solid rgba(245, 158, 11, 0.2);
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 10px;
+      color: #fff;
+    }
+
+    .card-text {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+
+    .card-tag {
+      display: inline-block;
+      margin-top: 14px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--accent-gold-light);
+      background: rgba(245, 158, 11, 0.1);
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-family: monospace;
+    }
+
+    /* Financial Table Styling */
+    .pricing-card {
+      background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+      border: 1px solid rgba(245, 158, 11, 0.3);
+      border-radius: 20px;
+      padding: 36px;
+      margin-top: 24px;
+      box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .total-banner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      margin-bottom: 24px;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+
+    .total-label {
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    .total-amount {
+      font-family: 'Outfit', sans-serif;
+      font-size: 36px;
+      font-weight: 800;
+      color: var(--accent-gold-light);
+    }
+
+    .payment-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .payment-table th, .payment-table td {
+      padding: 16px;
+      text-align: left;
+    }
+
+    .payment-table th {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .payment-table td {
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+    }
+
+    .payment-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    /* Timeline Roadmap */
+    .timeline {
+      position: relative;
+      padding-left: 30px;
+      margin-top: 24px;
+    }
+
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 10px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      background: var(--border-color);
+    }
+
+    .timeline-item {
+      position: relative;
+      margin-bottom: 24px;
+    }
+
+    .timeline-item::before {
+      content: '';
+      position: absolute;
+      left: -24px;
+      top: 6px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--accent-gold);
+      box-shadow: 0 0 10px var(--accent-gold);
+    }
+
+    .timeline-phase {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-gold-light);
+      text-transform: uppercase;
+    }
+
+    .timeline-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      margin: 2px 0 4px 0;
+    }
+
+    .timeline-desc {
+      font-size: 14px;
+      color: var(--text-muted);
+    }
+
+    /* Signature Area */
+    .signature-card {
+      background-color: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 36px;
+      margin-top: 40px;
+    }
+
+    .signature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 40px;
+      margin-top: 32px;
+    }
+
+    .sig-box {
+      border-top: 2px dashed rgba(255, 255, 255, 0.2);
+      padding-top: 16px;
+      text-align: center;
+    }
+
+    .sig-title {
+      font-weight: 700;
+      color: #fff;
+    }
+
+    .sig-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 4px;
+    }
+
+    /* Footer */
+    footer {
+      text-align: center;
+      margin-top: 60px;
+      padding-top: 24px;
+      border-top: 1px solid var(--border-color);
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    /* Print Styles */
+    @media print {
+      body {
+        background-color: #fff;
+        color: #000;
+        padding: 0;
+      }
+      .action-bar { display: none; }
+      .header-card, .card, .pricing-card, .signature-card {
+        background: #fff !important;
+        color: #000 !important;
+        border: 1px solid #ccc !important;
+        box-shadow: none !important;
+      }
+      .main-title {
+        -webkit-text-fill-color: initial !important;
+        color: #000 !important;
+      }
+      .subtitle, .card-text, .meta-label, .total-label, .timeline-desc, .sig-sub {
+        color: #333 !important;
+      }
+      .meta-val, .card-title, .section-title, .total-amount, .sig-title {
+        color: #000 !important;
+      }
+      .total-amount { color: #d97706 !important; }
+      .payment-table th { color: #555 !important; border-bottom: 1px solid #ccc !important; }
+      .payment-table td { border-bottom: 1px solid #eee !important; }
+      .status-badge { border: 1px solid #aaa !important; color: #000 !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- Action Bar -->
+    <div class="action-bar">
+      <button class="btn-print" onclick="window.print()">🖨️ Imprimir / Salvar em PDF</button>
+    </div>
+
+    <!-- Header Card -->
+    <div class="header-card">
+      <span class="proposal-badge">Proposta Comercial & Técnica</span>
+      <h1 class="main-title">Modernização & Plataforma Groomy ERP</h1>
+      <p class="subtitle">
+        Transformação digital e migração cloud completa do sistema de gestão corporativo, com preservação de 100% dos dados históricos de clientes, agendamentos, caixa e comissões.
+      </p>
+
+      <div class="meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Projeto</span>
+          <span class="meta-val">Groomy ERP Cloud Web</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Investimento Total</span>
+          <span class="meta-val">R$ 15.000,00</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Condição de Pagamento</span>
+          <span class="meta-val">5x R$ 3.000,00</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Data de Emissão</span>
+          <span class="meta-val">24 de Julho de 2026</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Escopo da Aplicação -->
+    <div class="section-header">
+      <h2 class="section-title">Escopo Abrangente da Aplicação</h2>
+    </div>
+
+    <div class="scope-grid">
+
+      <!-- Card 1 -->
+      <div class="card">
+        <div class="card-icon">📅</div>
+        <h3 class="card-title">Agenda Geral por Colunas</h3>
+        <p class="card-text">
+          Grade visual por profissionais com controle de status (Confirmado, Em Atendimento, Concluído) e consulta direta das fichas.
+        </p>
+        <span class="card-tag">Módulo CON_AGD</span>
+      </div>
+
+      <!-- Card 2 -->
+      <div class="card">
+        <div class="card-icon">📱</div>
+        <h3 class="card-title">Pedido Expresso Mobile</h3>
+        <p class="card-text">
+          Interface web exclusiva para celular dos profissionais lançarem seus próprios serviços com cálculo dinâmico de comissão estimada.
+        </p>
+        <span class="card-tag">Módulo FRM_EXP</span>
+      </div>
+
+      <!-- Card 3 -->
+      <div class="card">
+        <div class="card-icon">💳</div>
+        <h3 class="card-title">Checkout & Atendimento Rápido</h3>
+        <p class="card-text">
+          Fechamento de caixa com aplicação automática das regras de rateio proporcional (Fator Desconto e Fator Cartão) na comissão.
+        </p>
+        <span class="card-tag">Módulo FRM_CHK</span>
+      </div>
+
+      <!-- Card 4 -->
+      <div class="card">
+        <div class="card-icon">🖨️</div>
+        <h3 class="card-title">Cupom Térmico Não Fiscal</h3>
+        <p class="card-text">
+          Emissão direta em bobina contínua de 35 colunas com acionamento automático de impressora e abertura de gaveta.
+        </p>
+        <span class="card-tag">Módulo REL_PRN</span>
+      </div>
+
+      <!-- Card 5 -->
+      <div class="card">
+        <div class="card-icon">📊</div>
+        <h3 class="card-title">Central de 17 Relatórios Mapeados</h3>
+        <p class="card-text">
+          DRE Gerencial, Extrato Analítico de Comissões, Vendas por Bandeira de Cartão, Inventário de Produtos e Despesas em PDF/Excel.
+        </p>
+        <span class="card-tag">Módulo REL_CAT</span>
+      </div>
+
+      <!-- Card 6 -->
+      <div class="card">
+        <div class="card-icon">💬</div>
+        <h3 class="card-title">Automação WhatsApp EvolutionAPI</h3>
+        <p class="card-text">
+          Disparo automático de lembretes de agendamento, felicitações de aniversariantes do mês e mensagens operacionais.
+        </p>
+        <span class="card-tag">Módulo FRM_WTP</span>
+      </div>
+
+      <!-- Card 7 -->
+      <div class="card">
+        <div class="card-icon">🛡️</div>
+        <h3 class="card-title">Segurança RBAC & Auditoria Forense</h3>
+        <p class="card-text">
+          Trilha de auditoria imutável (sc_log) gravando snapshots JSON completos de todas as alterações e proteção anti-brute force em sec_logged.
+        </p>
+        <span class="card-tag">Módulo CON_AUD</span>
+      </div>
+
+      <!-- Card 8 -->
+      <div class="card">
+        <div class="card-icon">🔄</div>
+        <h3 class="card-title">Migração Integral de Dados (ETL)</h3>
+        <p class="card-text">
+          Migração em lote de mais de 920.000 registros mantendo a hegemonia numérica e continuidade histórica das chaves de negócio.
+        </p>
+        <span class="card-tag">ETL FoxPro -> MySQL</span>
+      </div>
+
+    </div>
+
+    <!-- Plano Financeiro -->
+    <div class="section-header">
+      <h2 class="section-title">Investimento & Cronograma Financeiro</h2>
+    </div>
+
+    <div class="pricing-card">
+      <div class="total-banner">
+        <div>
+          <div class="total-label">Valor Total do Projeto</div>
+          <div style="font-size: 13px; color: var(--text-muted); margin-top: 2px;">Inclui desenvolvimento web, migração de dados e implantação</div>
+        </div>
+        <div class="total-amount">R$ 15.000,00</div>
+      </div>
+
+      <table class="payment-table">
+        <thead>
+          <tr>
+            <th>Parcela</th>
+            <th>Vencimento / Etapa</th>
+            <th>Valor (R$)</th>
+            <th>Status</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>1ª Parcela</strong></td>
+            <td>Na Assinatura do Contrato (Ato)</td>
+            <td><strong>R$ 3.000,00</strong></td>
+            <td><span class="status-badge">Entrada</span></td>
+          </tr>
+          <tr>
+            <td><strong>2ª Parcela</strong></td>
+            <td>30 dias após assinatura (30DD)</td>
+            <td><strong>R$ 3.000,00</strong></td>
+            <td><span class="status-badge">Programado</span></td>
+          </tr>
+          <tr>
+            <td><strong>3ª Parcela</strong></td>
+            <td>60 dias após assinatura (60DD)</td>
+            <td><strong>R$ 3.000,00</strong></td>
+            <td><span class="status-badge">Programado</span></td>
+          </tr>
+          <tr>
+            <td><strong>4ª Parcela</strong></td>
+            <td>90 dias após assinatura (90DD)</td>
+            <td><strong>R$ 3.000,00</strong></td>
+            <td><span class="status-badge">Programado</span></td>
+          </tr>
+          <tr>
+            <td><strong>5ª Parcela</strong></td>
+            <td>120 dias após assinatura (120DD)</td>
+            <td><strong>R$ 3.000,00</strong></td>
+            <td><span class="status-badge">Homologação Final</span></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Cronograma de Entrega -->
+    <div class="section-header">
+      <h2 class="section-title">Cronograma Estruturado de Entrega</h2>
+    </div>
+
+    <div class="card">
+      <div class="timeline">
+        <div class="timeline-item">
+          <div class="timeline-phase">Fase 1 (0 a 30 dias)</div>
+          <div class="timeline-title">Infraestrutura Cloud & Pedido Expresso Mobile</div>
+          <div class="timeline-desc">Criação do Banco de Dados MySQL na VPS1, módulo de segurança RBAC e liberação da interface mobile para profissionais.</div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-phase">Fase 2 (30 a 60 dias)</div>
+          <div class="timeline-title">Agenda por Colunas & Integração WhatsApp</div>
+          <div class="timeline-desc">Implantação da visão de agenda geral, cadastro de clientes/profissionais e ativação da EvolutionAPI para envio de mensagens.</div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-phase">Fase 3 (60 a 90 dias)</div>
+          <div class="timeline-title">Checkout do Caixa & Rateio de Comissões</div>
+          <div class="timeline-desc">Módulo de Atendimento Rápido, aplicação do Fator Desconto/Cartão nas comissões e impressão de cupons térmicos.</div>
+        </div>
+
+        <div class="timeline-item">
+          <div class="timeline-phase">Fase 4 (90 a 120 dias)</div>
+          <div class="timeline-title">Central de 17 Relatórios, Virada Final & Treinamento</div>
+          <div class="timeline-desc">Mapeamento dos 17 relatórios web, DRE Gerencial, migração final dos dados atualizados e treinamento operacional da equipe.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Assinatura do Cliente -->
+    <div class="signature-card">
+      <h3 style="font-family: 'Outfit', sans-serif; font-size: 20px; font-weight: 700; color: #fff; margin-bottom: 8px;">De Acordo & Aceite</h3>
+      <p style="font-size: 14px; color: var(--text-muted);">
+        A assinatura abaixo consolida o aceite dos termos, escopo e cronograma de pagamento descritos nesta proposta comercial.
+      </p>
+
+      <div class="signature-grid">
+        <div class="sig-box">
+          <div class="sig-title">CONTRATANTE / CLIENTE</div>
+          <div class="sig-sub">Assinatura & Carimbo</div>
+        </div>
+        <div class="sig-box">
+          <div class="sig-title">CONTRATADO / DESENVOLVIMENTO</div>
+          <div class="sig-sub">CSI Software & Tecnologia</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      Groomy ERP Cloud — Sistema de Gestão para Salões e Clínicas &bull; Documento Gerado em 24/07/2026
+    </footer>
+
+  </div>
+
+</body>
+</html>
