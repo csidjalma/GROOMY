@@ -27,6 +27,7 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - **bandeiras**: 6 registros
 - **atividades**: 5 registros
 - **pedidos**: 0 registros
+- **usuarios**: 7 registros (incluindo MESTRE, WAGNER, ROSA e RAPHAEL)
 - **Total Migrado:** Mais de 920.000 registros importados em lote com sucesso da base atualizada.
 
 ---
@@ -39,25 +40,39 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - [x] Execução da migração massiva dos DBFs do FoxPro para a VPS1 (Tabelas completas)
 - [x] Desenvolvimento do mockup funcional HTML interativo (`index.html`)
 
-### Etapa 2: Inicialização da Aplicação Next.js
-- [ ] Configuração do projeto Next.js (App Router, TypeScript)
-- [ ] Configuração da conexão com o banco de dados MySQL na VPS1 (sem Prisma ORM, utilizando queries nativas ou query builder leve para alta performance)
-- [ ] Configuração do sistema de rotas e layout base do painel administrativo
+### Etapa 2: Inicialização da Aplicação Next.js & Autenticação
+- [x] Configuração do projeto Next.js (App Router, TypeScript)
+- [x] Configuração da conexão com o banco de dados MySQL na VPS1 (sem Prisma ORM)
+- [ ] Sistema de autenticação seguro (JWT/Cookies) diferenciando:
+  - Perfil **Recepção/Administrador** (Desktop)
+  - Perfil **Profissional** (Mobile - restrito aos seus próprios lançamentos)
 
-### Etapa 3: Módulo de Agendamento de Profissionais
-- [ ] Criação do componente visual de grade/agenda por colunas (uma coluna por Profissional)
-- [ ] Integração do comportamento Drag & Drop com persistência imediata no banco de dados via Server Actions
+### Etapa 3: Módulo Movel - Pedido Expresso (Profissionais)
+- [ ] Fluxo de Convite e Cadastro via EvolutionAPI (WhatsApp):
+  - Recepção gera convite ➔ Dispara mensagem WhatsApp com URL + Token único ➔ Profissional realiza cadastro e valida celular.
+- [ ] Tela Mobile do Profissional (Foco em Usabilidade e Agilidade):
+  - Campo de Ficha (Card número)
+  - Seleção de Serviço (exibe comissões/preços associados)
+  - Lançamento rápido direto na tabela `pedidos` (com status pendente/aberto).
+
+### Etapa 4: Módulo de Agendamento de Profissionais
+- [ ] Grade/agenda por colunas (uma coluna por Profissional)
+- [ ] Integração Drag & Drop com persistência imediata via Server Actions
 - [ ] Exibição em tempo real de conflitos ou indisponibilidade de horários
 
-### Etapa 4: Módulo de Atendimento Rápido & Comissões
-- [ ] Criação da tela de lançamento ágil focada em navegação rápida por teclado (Enter, Tab e seletores com busca rápida)
-- [ ] Cálculo automático e exibição de comissões em tempo real durante a montagem do pedido
-- [ ] Desenvolvimento de Server Action em transação atômica MySQL para finalização de atendimentos:
-  - Salvar pedido/venda na tabela `atendimentos` e itens na `itens_atendimento`
-  - Gerar registros de comissão pendente para o profissional na tabela `comissoes`
-- [ ] Geração e visualização do cupom de pedidos para impressão
+### Etapa 5: Módulo de Atendimento Rápido (Recepção) & Comissões
+- [ ] Importação automática da Ficha (ex: abrindo a ficha 2798, o sistema consolida na tela de fechamento todos os serviços adicionados pelos profissionais na mesa/celular)
+- [ ] Tela de lançamento manual rápido por teclado (Enter, Tab e busca preditiva)
+- [ ] Server Action com transação atômica MySQL para finalização de atendimentos:
+  - Salvar atendimento final, itens da ordem, pagamentos e gerar comissões ajustadas.
+  - Fechar/Limpar a Ficha (marcar pedidos como processados).
 
-### Etapa 5: Módulo de Pagamentos & Comissões
-- [ ] Lançamento financeiro de pagamentos (PIX, cartões, dinheiro)
-- [ ] Painel para os profissionais consultarem suas comissões acumuladas e solicitar baixas
+### Etapa 6: Módulo de Pagamentos & Relatório de Comissões
+- [ ] Lançamento financeiro de pagamentos (PIX, cartões com taxas, dinheiro com descontos)
+- [ ] Painel do profissional para consulta e solicitação de baixa de comissões acumuladas
 - [ ] Registro histórico de baixas e pagamentos de comissão efetuados
+
+## 🛠️ Diretrizes Globais de Interface e Suporte
+- **Identificação Discreta de Telas:** Toda tela da aplicação web (tanto desktop quanto mobile) deve exibir em seu canto inferior direito, com opacidade reduzida e fonte discreta (ex: `text-[10px] text-gray-400/50`), o código único de identificação da tela (ex: `FRM-LGN` para login, `FRM-EXP` para Pedido Expresso, `FRM-AGD` para Agenda, `FRM-ATD` para Atendimento Rápido). Essa convenção ajudará a equipe de suporte e manutenção a identificar com exatidão a view operacional utilizada pelo cliente.
+
+
