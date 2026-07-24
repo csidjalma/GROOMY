@@ -1,0 +1,40 @@
+/*Table: sec_log;*/
+-----------------
+
+/*Column Information*/
+----------------------
+
+Field          Type          Collation           Null    Key     Default  Extra           Privileges                       Comment  
+-------------  ------------  ------------------  ------  ------  -------  --------------  -------------------------------  ---------
+id             int           (NULL)              NO      PRI     (NULL)   auto_increment  select,insert,update,references           
+inserted_date  datetime      (NULL)              YES             (NULL)                   select,insert,update,references           
+username       varchar(90)   utf8mb3_general_ci  NO              (NULL)                   select,insert,update,references           
+application    varchar(255)  utf8mb3_general_ci  NO              (NULL)                   select,insert,update,references           
+creator        varchar(30)   utf8mb3_general_ci  NO              (NULL)                   select,insert,update,references           
+ip_user        varchar(255)  utf8mb3_general_ci  NO              (NULL)                   select,insert,update,references           
+action         varchar(255)  utf8mb3_general_ci  NO              (NULL)                   select,insert,update,references           
+description    text          utf8mb3_general_ci  YES             (NULL)                   select,insert,update,references           
+
+/*Index Information*/
+---------------------
+
+Table   Non_unique  Key_name  Seq_in_index  Column_name  Collation  Cardinality  Sub_part  Packed  Null    Index_type  Comment  Index_comment  Visible  Expression  
+------  ----------  --------  ------------  -----------  ---------  -----------  --------  ------  ------  ----------  -------  -------------  -------  ------------
+sec_log;           0  PRIMARY              1  id           A                37369    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+                                                                                                                                                                    
+
+/*DDL Information*/
+-------------------
+
+CREATE TABLE `sec_log;` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `inserted_date` datetime DEFAULT NULL,
+  `username` varchar(90) NOT NULL,
+  `application` varchar(255) NOT NULL,
+  `creator` varchar(30) NOT NULL,
+  `ip_user` varchar(255) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb3
+

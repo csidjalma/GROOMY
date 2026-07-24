@@ -1,0 +1,33 @@
+/*Table: sec_users_groups*/
+---------------------------
+
+/*Column Information*/
+----------------------
+
+Field     Type          Collation           Null    Key     Default  Extra   Privileges                       Comment  
+--------  ------------  ------------------  ------  ------  -------  ------  -------------------------------  ---------
+login     varchar(251)  utf8mb3_general_ci  NO      PRI     (NULL)           select,insert,update,references           
+group_id  int           (NULL)              NO      PRI     (NULL)           select,insert,update,references           
+
+/*Index Information*/
+---------------------
+
+Table             Non_unique  Key_name                 Seq_in_index  Column_name  Collation  Cardinality  Sub_part  Packed  Null    Index_type  Comment  Index_comment  Visible  Expression  
+----------------  ----------  -----------------------  ------------  -----------  ---------  -----------  --------  ------  ------  ----------  -------  -------------  -------  ------------
+sec_users_groups           0  PRIMARY                             1  login        A                   20    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+sec_users_groups           0  PRIMARY                             2  group_id     A                   25    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+sec_users_groups           1  sec_users_groups_ibfk_2             1  group_id     A                    4    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+                                                                                                                                                                                             
+
+/*DDL Information*/
+-------------------
+
+CREATE TABLE `sec_users_groups` (
+  `login` varchar(251) NOT NULL,
+  `group_id` int NOT NULL,
+  PRIMARY KEY (`login`,`group_id`),
+  KEY `sec_users_groups_ibfk_2` (`group_id`),
+  CONSTRAINT `sec_users_groups_ibfk_1` FOREIGN KEY (`login`) REFERENCES `sec_users` (`login`) ON DELETE CASCADE,
+  CONSTRAINT `sec_users_groups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `sec_groups` (`group_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+

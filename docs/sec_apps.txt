@@ -1,0 +1,36 @@
+/*Table: sec_apps*/
+-------------------
+
+/*Column Information*/
+----------------------
+
+Field           Type          Collation           Null    Key     Default  Extra   Privileges                       Comment  
+--------------  ------------  ------------------  ------  ------  -------  ------  -------------------------------  ---------
+app_name        varchar(128)  utf8mb3_general_ci  NO      PRI     (NULL)           select,insert,update,references           
+app_type        varchar(255)  utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+app_route       varchar(255)  utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+description     varchar(255)  utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+app_video_link  varchar(255)  utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+app_video_conf  varchar(150)  utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+
+/*Index Information*/
+---------------------
+
+Table     Non_unique  Key_name  Seq_in_index  Column_name  Collation  Cardinality  Sub_part  Packed  Null    Index_type  Comment  Index_comment  Visible  Expression  
+--------  ----------  --------  ------------  -----------  ---------  -----------  --------  ------  ------  ----------  -------  -------------  -------  ------------
+sec_apps           0  PRIMARY              1  app_name     A                   15    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+                                                                                                                                                                      
+
+/*DDL Information*/
+-------------------
+
+CREATE TABLE `sec_apps` (
+  `app_name` varchar(128) NOT NULL,
+  `app_type` varchar(255) DEFAULT NULL,
+  `app_route` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `app_video_link` varchar(255) DEFAULT NULL,
+  `app_video_conf` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`app_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+

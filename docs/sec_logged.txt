@@ -1,0 +1,30 @@
+/*Table: sec_logged*/
+---------------------
+
+/*Column Information*/
+----------------------
+
+Field       Type          Collation           Null    Key     Default  Extra   Privileges                       Comment  
+----------  ------------  ------------------  ------  ------  -------  ------  -------------------------------  ---------
+login       varchar(32)   utf8mb3_general_ci  NO              (NULL)           select,insert,update,references           
+date_login  varchar(128)  utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+sc_session  varchar(32)   utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+ip          varchar(32)   utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+
+/*Index Information*/
+---------------------
+
+Table   Non_unique  Key_name  Seq_in_index  Column_name  Collation  Cardinality  Sub_part  Packed  Null    Index_type  Comment  Index_comment  Visible  Expression  
+------  ----------  --------  ------------  -----------  ---------  -----------  --------  ------  ------  ----------  -------  -------------  -------  ------------
+
+
+/*DDL Information*/
+-------------------
+
+CREATE TABLE `sec_logged` (
+  `login` varchar(32) NOT NULL,
+  `date_login` varchar(128) DEFAULT NULL,
+  `sc_session` varchar(32) DEFAULT NULL,
+  `ip` varchar(32) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+

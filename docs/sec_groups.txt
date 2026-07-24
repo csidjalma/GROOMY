@@ -1,0 +1,30 @@
+/*Table: sec_groups*/
+---------------------
+
+/*Column Information*/
+----------------------
+
+Field        Type         Collation           Null    Key     Default  Extra           Privileges                       Comment  
+-----------  -----------  ------------------  ------  ------  -------  --------------  -------------------------------  ---------
+group_id     int          (NULL)              NO      PRI     (NULL)   auto_increment  select,insert,update,references           
+description  varchar(64)  utf8mb3_general_ci  YES     UNI     (NULL)                   select,insert,update,references           
+
+/*Index Information*/
+---------------------
+
+Table       Non_unique  Key_name     Seq_in_index  Column_name  Collation  Cardinality  Sub_part  Packed  Null    Index_type  Comment  Index_comment  Visible  Expression  
+----------  ----------  -----------  ------------  -----------  ---------  -----------  --------  ------  ------  ----------  -------  -------------  -------  ------------
+sec_groups           0  PRIMARY                 1  group_id     A                    9    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+sec_groups           0  description             1  description  A                    9    (NULL)  (NULL)  YES     BTREE                               YES      (NULL)      
+                                                                                                                                                                           
+
+/*DDL Information*/
+-------------------
+
+CREATE TABLE `sec_groups` (
+  `group_id` int NOT NULL AUTO_INCREMENT,
+  `description` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`group_id`),
+  UNIQUE KEY `description` (`description`)
+) ENGINE=InnoDB AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb3
+

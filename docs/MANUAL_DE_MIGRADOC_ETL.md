@@ -1,6 +1,6 @@
-# Manual de Migração e Tombamento de Dados — FoxPro para MySQL (Groomy)
+# Manual de Migração, Tombamento de Dados e Segurança RBAC — Groomy
 
-Este documento estabelece as diretrizes de arquitetura, especificação de schema e o protocolo de execução em duas fases para a conversão e o tombamento definitivo do banco de dados do sistema legado **CSI (Visual FoxPro DBF)** para o novo banco de dados **MySQL VPS1 (`devcs_banco_groomy`)**.
+Este documento estabelece as diretrizes de arquitetura, especificação de schema, módulo de segurança RBAC e o protocolo de execução em duas fases para a conversão e o tombamento definitivo do banco de dados do sistema legado **CSI (Visual FoxPro DBF)** para o novo banco de dados **MySQL VPS1 (`devcs_banco_groomy`)**.
 
 ---
 
@@ -38,39 +38,146 @@ Este documento estabelece as diretrizes de arquitetura, especificação de schem
 
 ---
 
+## 🛡️ Módulo de Gestão de Acesso, Segurança e Controle RBAC (Prefixo `sec_`)
+
+O controle de segurança e auditoria do sistema segue a estrutura de **Controle de Acesso Baseado em Funções (RBAC)** com o prefixo `sec_` (proveniente de *Security*), garantindo controle granular por aplicação/tela e auditoria imutável (`sc_log` / `sec_log`).
+
+### 1. `sec_users` — Tabela de Usuários e Credenciais
+*   **Chave Primária:** `login` (`VARCHAR(251)`)
+*   **Finalidade:** Armazena os usuários do sistema, senhas em hash MD5, status de ativador (`active`), token de validação de 6 dígitos via WhatsApp (`user_tk`), expiração e dados de sessão.
+```sql
+CREATE TABLE `sec_users` (
+  `login` varchar(251) NOT NULL,
+  `pswd` varchar(50) NOT NULL,
+  `name` varchar(64) DEFAULT NULL,
+  `email` varchar(250) DEFAULT NULL,
+  `active` varchar(1) DEFAULT NULL,
+  `activation_code` varchar(32) DEFAULT NULL,
+  `priv_admin` varchar(1) DEFAULT NULL,
+  `foto` longblob,
+  `celular` varchar(20) DEFAULT NULL,
+  `pswd_temp` varchar(50) DEFAULT 'SIM',
+  `data_cadastro` datetime DEFAULT NULL,
+  `grupo_usu` int DEFAULT NULL,
+  `user_obs` varchar(240) DEFAULT NULL,
+  `user_expo` int DEFAULT '0',
+  `user_mobile_check` varchar(3) DEFAULT 'NAO',
+  `user_tk` varchar(60) DEFAULT NULL,
+  `pswd_changed_at` datetime DEFAULT NULL,
+  `pswd_expires_at` datetime DEFAULT NULL,
+  `login_count` int DEFAULT '0',
+  `last_login_at` datetime DEFAULT NULL,
+  `last_login_ip` varchar(45) DEFAULT NULL,
+  `user_tk_expira` datetime DEFAULT NULL,
+  PRIMARY KEY (`login`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 2. `sec_groups` — Grupos de Acesso
+*   **Chave Primária:** `group_id` (`INT AUTO_INCREMENT`)
+*   **Finalidade:** Cadastro de grupos/funções de trabalho (ex: `1 = Administrador`, `2 = Recepção / Caixa`, `3 = Profissionais`).
+```sql
+CREATE TABLE `sec_groups` (
+  `group_id` int NOT NULL AUTO_INCREMENT,
+  `description` varchar(64) DEFAULT NULL,
+  PRIMARY KEY (`group_id`),
+  UNIQUE KEY `description` (`description`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 3. `sec_apps` — Catálogo de Aplicações e Telas
+*   **Chave Primária:** `app_name` (`VARCHAR(128)`)
+*   **Finalidade:** Cadastra todas as telas do sistema associadas às suas rotas e codificações discretas de suporte (ex: `FRM-LGN`, `FRM-USR`, `FRM-WTP`, `FRM-MBL`, `FRM-AGD`, `FRM-CHK`, `FRM-PRN`, `FRM-REL`, `FRM-AUD`).
+```sql
+CREATE TABLE `sec_apps` (
+  `app_name` varchar(128) NOT NULL,
+  `app_type` varchar(255) DEFAULT NULL,
+  `app_route` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `app_video_link` varchar(255) DEFAULT NULL,
+  `app_video_conf` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`app_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 4. `sec_groups_apps` — Permissões Granulares por Grupo e Aplicação
+*   **Chave Primária Composta:** (`group_id`, `app_name`)
+*   **Finalidade:** Matriz de permissões detalhadas (`priv_access`, `priv_insert`, `priv_delete`, `priv_update`, `priv_export`, `priv_print`).
+```sql
+CREATE TABLE `sec_groups_apps` (
+  `group_id` int NOT NULL,
+  `app_name` varchar(128) NOT NULL,
+  `priv_access` varchar(1) DEFAULT NULL,
+  `priv_insert` varchar(1) DEFAULT NULL,
+  `priv_delete` varchar(1) DEFAULT NULL,
+  `priv_update` varchar(1) DEFAULT NULL,
+  `priv_export` varchar(1) DEFAULT NULL,
+  `priv_print` varchar(1) DEFAULT NULL,
+  PRIMARY KEY (`group_id`,`app_name`),
+  CONSTRAINT `sec_groups_apps_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `sec_groups` (`group_id`) ON DELETE CASCADE,
+  CONSTRAINT `sec_groups_apps_ibfk_2` FOREIGN KEY (`app_name`) REFERENCES `sec_apps` (`app_name`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 5. `sec_users_groups` — Associação Usuários vs. Grupos
+*   **Chave Primária Composta:** (`login`, `group_id`)
+*   **Finalidade:** Relacionamento N:M permitindo que um usuário pertença a múltiplos grupos.
+```sql
+CREATE TABLE `sec_users_groups` (
+  `login` varchar(251) NOT NULL,
+  `group_id` int NOT NULL,
+  PRIMARY KEY (`login`,`group_id`),
+  CONSTRAINT `sec_users_groups_ibfk_1` FOREIGN KEY (`login`) REFERENCES `sec_users` (`login`) ON DELETE CASCADE,
+  CONSTRAINT `sec_users_groups_ibfk_2` FOREIGN KEY (`group_id`) REFERENCES `sec_groups` (`group_id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 6. `sec_logged` — Usuários Ativos em Tempo Real
+*   **Chave Primária:** `login` (`VARCHAR(251)`)
+*   **Finalidade:** Rastreamento de sessões concorrentes e usuários online.
+```sql
+CREATE TABLE `sec_logged` (
+  `login` varchar(251) NOT NULL,
+  `date_login` varchar(128) DEFAULT NULL,
+  `sc_session` varchar(32) DEFAULT NULL,
+  `ip` varchar(32) DEFAULT NULL,
+  PRIMARY KEY (`login`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+### 7. `sc_log` / `sec_log` — Trilha de Auditoria Imutável
+*   **Chave Primária:** `id` (`INT AUTO_INCREMENT`)
+*   **Finalidade:** Registro de log de auditoria de cada ação executada no sistema (data, usuário, aplicação, IP, ação e descrição).
+*   **Regra de Ouro:** Usuários que possuem registros gravados na `sc_log` **não podem sofrer exclusão física do banco**, apenas desativação lógica (`active = 'N'`).
+```sql
+CREATE TABLE `sc_log` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `inserted_date` datetime DEFAULT NULL,
+  `username` varchar(90) NOT NULL,
+  `application` varchar(255) NOT NULL,
+  `creator` varchar(30) NOT NULL,
+  `ip_user` varchar(255) NOT NULL,
+  `action` varchar(255) NOT NULL,
+  `description` text,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
+
+---
+
 ## 🔄 Protocolo de Tombamento em Duas Fases
 
 O processo de migração foi estruturado para ocorrer estritamente em **2 Fases**:
 
 ### 🔹 Fase 1: Desenvolvimento e Validação de Schema (Em Andamento)
-*   **Objetivo:** Criar e testar todas as rotas da aplicação Next.js contra um snapshot atualizado da base de dados.
-*   **Execução:**
-    1. Re-criação dinâmica das tabelas com tipagem MySQL otimizada (`DECIMAL`, `DATE`, `DATETIME`, `TINYINT(1)`, `VARCHAR`, `TEXT`).
-    2. Importação em lote (*batch insert* em blocos de 3.000 registros por transação).
-    3. Ajuste do ponteiro `AUTO_INCREMENT` para `MAX + 1` em cada tabela com chave sequencial.
+1. Re-criação dinâmica das tabelas com tipagem MySQL otimizada (`DECIMAL`, `DATE`, `DATETIME`, `TINYINT(1)`, `VARCHAR`, `TEXT`).
+2. Importação em lote (*batch insert* em blocos de 3.000 registros por transação).
+3. Ajuste do ponteiro `AUTO_INCREMENT` para `MAX + 1` em cada tabela com chave sequencial.
+4. Criação e semeadura inicial do módulo de segurança RBAC (`sec_*`).
 
 ### 🔹 Fase 2: Tombamento Definitivo (Virada de Chave / Cutover)
-*   **Objetivo:** Executar o congelamento final da base FoxPro no dia da virada para o Groomy.
-*   **Checklist de Execução da Virada:**
-    1. **Congelamento:** Bloquear novos lançamentos no sistema legado FoxPro.
-    2. **Extração Final:** Executar o script `remigrate_exact_schema.py` na raiz do projeto.
-    3. **Ajuste de Sequenciadores:** Executar `apply_auto_increment_and_schema.py` para recalcular o `MAX + 1` de todas as chaves primárias.
-    4. **Validação de Totais:** Conferir se a contagem de registros entre os arquivos `.DBF` e as tabelas MySQL VPS1 coincide 100%.
-    5. **Ativação:** Liberar o acesso operacional exclusivo pelo Groomy ERP.
-
----
-
-## 🛡️ Gestão de Acesso, Segurança e Controle RBAC
-
-A segurança do sistema é gerenciada separadamente nas tabelas dedicadas de controle de acesso (padrão Scriptcase RBAC + `sc_log`):
-*   `sec_users`: Contas de usuários, logins, senhas em hash MD5, token de recuperação `user_tk` e ativador `active`.
-*   `sec_groups`: Definição dos grupos de trabalho (Administrador, Recepção, Profissionais).
-*   `sec_users_groups`: Relação M:N entre usuários e grupos.
-*   `sec_apps`: Módulos e telas com código discreto no canto inferior direito (ex: `FRM-LGN`, `FRM-USR`, `FRM-WTP`, `FRM-CHK`).
-*   `sec_groups_apps`: Permissões granulares de acesso (Ler, Gravar, Alterar, Excluir).
-*   `sc_log`: Registro de auditoria imutável (bloqueia exclusão física de usuários auditados).
-
----
-
-## 📜 Histórico de Versões e Atualizações do Manual
-*   **v1.0 (24/07/2026):** Restauração da paridade de nomes de campos 1:1, eliminação do sufixo `_legado`, e configuração da continuidade sequencial com `AUTO_INCREMENT = MAX + 1`.
+1. **Congelamento:** Bloquear novos lançamentos no sistema legado FoxPro.
+2. **Extração Final:** Executar o script `remigrate_exact_schema.py` na raiz do projeto.
+3. **Ajuste de Sequenciadores:** Executar `apply_auto_increment_and_schema.py` para recalcular o `MAX + 1` de todas as chaves primárias.
+4. **Validação de Totais:** Conferir se a contagem de registros entre os arquivos `.DBF` e as tabelas MySQL VPS1 coincide 100%.
+5. **Ativação:** Liberar o acesso operacional exclusivo pelo Groomy ERP.

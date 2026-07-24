@@ -1,0 +1,45 @@
+/*Table: sec_groups_apps*/
+--------------------------
+
+/*Column Information*/
+----------------------
+
+Field        Type          Collation           Null    Key     Default  Extra   Privileges                       Comment  
+-----------  ------------  ------------------  ------  ------  -------  ------  -------------------------------  ---------
+group_id     int           (NULL)              NO      PRI     (NULL)           select,insert,update,references           
+app_name     varchar(128)  utf8mb3_general_ci  NO      PRI     (NULL)           select,insert,update,references           
+priv_access  varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+priv_insert  varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+priv_delete  varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+priv_update  varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+priv_export  varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+priv_print   varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+
+/*Index Information*/
+---------------------
+
+Table            Non_unique  Key_name                Seq_in_index  Column_name  Collation  Cardinality  Sub_part  Packed  Null    Index_type  Comment  Index_comment  Visible  Expression  
+---------------  ----------  ----------------------  ------------  -----------  ---------  -----------  --------  ------  ------  ----------  -------  -------------  -------  ------------
+sec_groups_apps           0  PRIMARY                            1  group_id     A                    5    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+sec_groups_apps           0  PRIMARY                            2  app_name     A                   28    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+sec_groups_apps           1  sec_groups_apps_ibfk_2             1  app_name     A                   15    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+                                                                                                                                                                                           
+
+/*DDL Information*/
+-------------------
+
+CREATE TABLE `sec_groups_apps` (
+  `group_id` int NOT NULL,
+  `app_name` varchar(128) NOT NULL,
+  `priv_access` varchar(1) DEFAULT NULL,
+  `priv_insert` varchar(1) DEFAULT NULL,
+  `priv_delete` varchar(1) DEFAULT NULL,
+  `priv_update` varchar(1) DEFAULT NULL,
+  `priv_export` varchar(1) DEFAULT NULL,
+  `priv_print` varchar(1) DEFAULT NULL,
+  PRIMARY KEY (`group_id`,`app_name`),
+  KEY `sec_groups_apps_ibfk_2` (`app_name`),
+  CONSTRAINT `sec_groups_apps_ibfk_1` FOREIGN KEY (`group_id`) REFERENCES `sec_groups` (`group_id`) ON DELETE CASCADE,
+  CONSTRAINT `sec_groups_apps_ibfk_2` FOREIGN KEY (`app_name`) REFERENCES `sec_apps` (`app_name`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+

@@ -1,0 +1,68 @@
+/*Table: sec_users*/
+--------------------
+
+/*Column Information*/
+----------------------
+
+Field              Type          Collation           Null    Key     Default  Extra   Privileges                       Comment  
+-----------------  ------------  ------------------  ------  ------  -------  ------  -------------------------------  ---------
+login              varchar(251)  utf8mb3_general_ci  NO      PRI     (NULL)           select,insert,update,references           
+pswd               varchar(50)   utf8mb3_general_ci  NO              (NULL)           select,insert,update,references           
+name               varchar(64)   utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+email              varchar(250)  utf8mb3_general_ci  YES     UNI     (NULL)           select,insert,update,references           
+active             varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+activation_code    varchar(32)   utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+priv_admin         varchar(1)    utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+foto               longblob      (NULL)              YES             (NULL)           select,insert,update,references           
+celular            varchar(20)   utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+pswd_temp          varchar(50)   utf8mb3_general_ci  YES             SIM              select,insert,update,references           
+data_cadastro      datetime      (NULL)              YES             (NULL)           select,insert,update,references           
+grupo_usu          int           (NULL)              YES             (NULL)           select,insert,update,references           
+user_obs           varchar(240)  utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+user_expo          int           (NULL)              YES             0                select,insert,update,references           
+user_mobile_check  varchar(3)    utf8mb3_general_ci  YES             NAO              select,insert,update,references           
+user_tk            varchar(60)   utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+pswd_changed_at    datetime      (NULL)              YES             (NULL)           select,insert,update,references           
+pswd_expires_at    datetime      (NULL)              YES             (NULL)           select,insert,update,references           
+login_count        int           (NULL)              YES             0                select,insert,update,references           
+last_login_at      datetime      (NULL)              YES             (NULL)           select,insert,update,references           
+last_login_ip      varchar(45)   utf8mb3_general_ci  YES             (NULL)           select,insert,update,references           
+user_tk_expira     datetime      (NULL)              YES             (NULL)           select,insert,update,references           
+
+/*Index Information*/
+---------------------
+
+Table      Non_unique  Key_name  Seq_in_index  Column_name  Collation  Cardinality  Sub_part  Packed  Null    Index_type  Comment  Index_comment  Visible  Expression  
+---------  ----------  --------  ------------  -----------  ---------  -----------  --------  ------  ------  ----------  -------  -------------  -------  ------------
+sec_users           0  PRIMARY              1  login        A                   19    (NULL)  (NULL)          BTREE                               YES      (NULL)      
+                                                                                                                                                                       
+
+/*DDL Information*/
+-------------------
+
+CREATE TABLE `sec_users` (
+  `login` varchar(251) NOT NULL,
+  `pswd` varchar(50) NOT NULL,
+  `name` varchar(64) DEFAULT NULL,
+  `email` varchar(250) DEFAULT NULL,
+  `active` varchar(1) DEFAULT NULL,
+  `activation_code` varchar(32) DEFAULT NULL,
+  `priv_admin` varchar(1) DEFAULT NULL,
+  `foto` longblob,
+  `celular` varchar(20) DEFAULT NULL,
+  `pswd_temp` varchar(50) DEFAULT 'SIM',
+  `data_cadastro` datetime DEFAULT NULL,
+  `grupo_usu` int DEFAULT NULL,
+  `user_obs` varchar(240) DEFAULT NULL,
+  `user_expo` int DEFAULT '0',
+  `user_mobile_check` varchar(3) DEFAULT 'NAO',
+  `user_tk` varchar(60) DEFAULT NULL,
+  `pswd_changed_at` datetime DEFAULT NULL,
+  `pswd_expires_at` datetime DEFAULT NULL,
+  `login_count` int DEFAULT '0',
+  `last_login_at` datetime DEFAULT NULL,
+  `last_login_ip` varchar(45) DEFAULT NULL,
+  `user_tk_expira` datetime DEFAULT NULL,
+  PRIMARY KEY (`login`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb3
+
