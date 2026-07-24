@@ -28,7 +28,14 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - **atividades**: 5 registros
 - **pedidos**: 0 registros
 - **usuarios**: 7 registros (incluindo MESTRE, WAGNER, ROSA e RAPHAEL)
+- **Tabelas de Segurança (RBAC)**:
+  - `sec_apps`: Catálogo de módulos/telas (Semeado com 10 aplicações padrão)
+  - `sec_groups`: Definição de grupos de trabalho
+  - `sec_users_groups`: Relação Muitos-para-Muitos entre Usuários e Grupos
+  - `sec_groups_apps`: Permissões granulares de acesso (Ler, Gravar, Alterar, Excluir) por grupo em cada app
+  - `sec_log`: Auditoria detalhada de ações dos usuários
 - **Total Migrado:** Mais de 920.000 registros importados em lote com sucesso da base atualizada.
+
 
 ---
 
