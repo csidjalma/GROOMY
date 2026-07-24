@@ -35,13 +35,15 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
   - `sec_apps`: Catálogo de módulos/telas (semeado com 10 aplicações padrão).
   - `sec_groups`: Definição de grupos de trabalho (Administrador, Recepção, Profissional, etc.).
   - `sec_users_groups`: Relação Muitos-para-Muitos entre Usuários e Grupos.
-  - `sec_groups_apps`: Permissões granulares de acesso (Ler, Gravar, Alterar, Excluir) por grupo em cada app.
-  - `sc_log`: Auditoria detalhada de ações dos usuários com retenção e trava de exclusão física.
+  - `sec_groups_apps`: Permissões granulares de acesso (Ler, Gravar, Alterar, Excluir, Exportar, Imprimir) por grupo em cada app.
+  - `sec_logged`: Controle de sessões concorrentes e proteção **anti-brute force** (bloqueio automático de 3 minutos após 3 falhas consecutivas de login).
+  - `sc_log` / `sec_log`: **Auditoria Forense de Reconstrução**: grava o snapshot/payload JSON completo de cada `insert`, `update` e `delete`, permitindo a reconstrução integral do estado de qualquer tabela ou registro. Possui trava de exclusão física para usuários auditados.
 - **Tabela de Configurações Dinâmicas**:
   - `tbl_config`: Armazena parâmetros globais do sistema (`evolution_api_url`, `evolution_api_token`, `evolution_instance`, `app_timezone`).
 - **Estrutura de Colunas & Sequenciamento:** **Paridade Exata 1:1** com o banco FoxPro (caixa baixa, sem acentos nem sufixos `_legado`). As chaves primárias numéricas (`cl_codigo`, `pf_codigo`, `se_codigo`, `po_codigo`, `at_codigo`, `de_codigo`, `ba_codigo`, `pe_codigo`) possuem **`AUTO_INCREMENT` ativo e configurado dinamicamente para `MAX + 1`**, garantindo continuidade histórica e que novos cadastros não colidam com o passado.
 - **Manual de Tombamento de Dados:** Documentação oficial completa registrada em [docs/MANUAL_DE_MIGRADOC_ETL.md](file:///C:/AI-PROJECTS/GROOMY/docs/MANUAL_DE_MIGRADOC_ETL.md).
 - **Total Migrado:** Mais de 920.000 registros re-importados e validados em lote.
+
 
 
 ---
