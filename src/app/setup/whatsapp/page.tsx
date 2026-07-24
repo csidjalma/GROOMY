@@ -20,20 +20,30 @@ export default function WhatsappSetupPage() {
   
   const pollingRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Load credentials from localStorage on mount (optional convenience)
+  // Load credentials from database on mount
   useEffect(() => {
-    const savedUrl = localStorage.getItem('groomy_evo_url') || '';
-    const savedToken = localStorage.getItem('groomy_evo_token') || '';
-    const savedInstance = localStorage.getItem('groomy_evo_instance') || 'groomy_whatsapp';
-    
-    setEvolutionUrl(savedUrl);
-    setEvolutionToken(savedToken);
-    setEvolutionInstance(savedInstance);
-    
-    if (savedUrl && savedToken && savedInstance) {
-      checkStatus(savedUrl, savedToken, savedInstance);
+    async function loadConfig() {
+      try {
+        const res = await fetch('/api/config');
+        const data = await res.json();
+        if (data.ok && data.config) {
+          const url = data.config.evolution_api_url || '';
+          const token = data.config.evolution_api_token || '';
+          const inst = data.config.evolution_instance || 'groomy_whatsapp';
+          
+          setEvolutionUrl(url);
+          setEvolutionToken(token);
+          setEvolutionInstance(inst);
+          
+          if (url && token && inst) {
+            checkStatus(url, token, inst);
+          }
+        }
+      } catch (err) {
+        console.error('Erro ao carregar configurações do banco:', err);
+      }
     }
-    
+    loadConfig();
     return () => stopPolling();
   }, []);
 
@@ -85,16 +95,43 @@ export default function WhatsappSetupPage() {
     }
   };
 
+  const handleSaveConfig = async () => {
+    if (!evolutionUrl || !evolutionToken || !evolutionInstance) {
+      alert('Por favor, preencha todos os campos antes de salvar.');
+      return;
+    }
+    setLoading(true);
+    try {
+      const res = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          configs: [
+            { key: 'evolution_api_url', value: evolutionUrl, type: 'string', group: 'whatsapp', label: 'URL da Evolution API' },
+            { key: 'evolution_api_token', value: evolutionToken, type: 'password', group: 'whatsapp', label: 'Token de Acesso (API Key)' },
+            { key: 'evolution_instance', value: evolutionInstance, type: 'string', group: 'whatsapp', label: 'Nome da Instância' }
+          ]
+        })
+      });
+      const data = await res.json();
+      if (data.ok) {
+        alert('Configurações salvas no banco de dados!');
+        checkStatus();
+      } else {
+        alert(data.error || 'Erro ao salvar configurações.');
+      }
+    } catch (err) {
+      alert('Erro de conexão ao salvar.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleConnect = async () => {
     if (!evolutionUrl || !evolutionToken || !evolutionInstance) {
       alert('Por favor, preencha a URL, o Token e a Instância.');
       return;
     }
-
-    // Save locally
-    localStorage.setItem('groomy_evo_url', evolutionUrl);
-    localStorage.setItem('groomy_evo_token', evolutionToken);
-    localStorage.setItem('groomy_evo_instance', evolutionInstance);
 
     setLoading(true);
     setWaQrCode(null);
@@ -261,16 +298,23 @@ export default function WhatsappSetupPage() {
             <button
               onClick={() => checkStatus()}
               disabled={loadingStatus}
-              className="flex-1 px-4 py-2.5 bg-slate-950 border border-slate-800 hover:border-slate-700 hover:bg-slate-900 rounded-xl transition-all text-xs font-semibold text-slate-300 disabled:opacity-50"
+              className="flex-1 px-3 py-2.5 bg-slate-950 border border-slate-800 hover:border-slate-700 hover:bg-slate-900 rounded-xl transition-all text-xs font-semibold text-slate-300 disabled:opacity-50"
             >
-              {loadingStatus ? 'Verificando...' : 'Verificar Status'}
+              {loadingStatus ? 'Verificando...' : 'Status'}
+            </button>
+            <button
+              onClick={handleSaveConfig}
+              disabled={loading}
+              className="flex-1 px-3 py-2.5 bg-indigo-950 border border-indigo-900 hover:bg-indigo-900 hover:border-indigo-800 rounded-xl transition-all text-xs font-semibold text-indigo-300 disabled:opacity-50"
+            >
+              Salvar
             </button>
             <button
               onClick={handleConnect}
               disabled={loading}
-              className="flex-1 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-xl transition-all text-xs font-semibold shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+              className="flex-1 px-3 py-2.5 bg-indigo-650 hover:bg-indigo-600 rounded-xl transition-all text-xs font-semibold shadow-lg shadow-indigo-600/10 disabled:opacity-50"
             >
-              {loading ? 'Processando...' : 'Gerar QR Code'}
+              {loading ? 'Gerando...' : 'Conectar (QR)'}
             </button>
           </div>
 
