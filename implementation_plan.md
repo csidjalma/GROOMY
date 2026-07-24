@@ -2,6 +2,16 @@
 
 Este arquivo serve como memória recorrente do projeto, permitindo o acompanhamento de todas as etapas concluídas e em andamento para o desenvolvimento do sistema Groomy.
 
+## 📌 Estado Atual Congelado & Pendência Ativa
+- **Status:** ❄️ **CONGELADO E SALVO COM SUCESSO.**
+- **Pendência Ativa do Usuário:** Receber as fotos/prints das telas originais para análise do posicionamento dos botões de ação e distribuição de conteúdo UI/UX.
+- **Resumo do Progresso Salvo:**
+  - **Índices Compostos e Performance:** Aplicados no MySQL VPS1 (`idx_comissao_prof_status_data`, `idx_itens_atend_prof`, `idx_logged_session_date`, etc.).
+  - **Taxonomia de Telas RBAC:** Padronizada em `sec_apps` (`LST_`, `DET_`, `CON_`, `FRM_`, `REL_`) no banco e no protótipo.
+  - **Impressão Térmica:** Mapeado o cupom de 35 colunas direto do fonte Visual FoxPro (`atendimento2.scx`).
+
+---
+
 ## ⚠️ Regra de Versionamento Automatizada
 > **"A marcação de passo iniciado (marcado `[/]`) DEVE ser feita assim que o agente iniciar o trabalho no item, funcionando como sinalizador de atividade ativa no Roadmap. A cada passo concluído (marcado `[x]`) DEVE haver uma execução imediata de um `git commit` detalhando a entrega. SOMENTE a finalização `[x]` dispara commits; a marcação `[/]` serve exclusivamente para controle de execução em tempo real pelo agente atual."**
 
