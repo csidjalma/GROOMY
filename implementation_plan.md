@@ -43,9 +43,11 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 ### Etapa 2: Inicialização da Aplicação Next.js & Autenticação
 - [x] Configuração do projeto Next.js (App Router, TypeScript)
 - [x] Configuração da conexão com o banco de dados MySQL na VPS1 (sem Prisma ORM)
+- [x] CRUD completo de Gerenciamento de Usuários (`usuarios`) integrado com criptografia Caesar compatível e etiqueta de suporte `FRM-USR` no rodapé
 - [ ] Sistema de autenticação seguro (JWT/Cookies) diferenciando:
   - Perfil **Recepção/Administrador** (Desktop)
   - Perfil **Profissional** (Mobile - restrito aos seus próprios lançamentos)
+
 
 ### Etapa 3: Módulo Movel - Pedido Expresso (Profissionais)
 - [ ] Fluxo de Convite e Cadastro via EvolutionAPI (WhatsApp):
