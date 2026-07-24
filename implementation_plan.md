@@ -43,11 +43,11 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 
 ---
 
-## 📐 Mockup & Mapeamento de Impressão e Relatórios
+## 📐 Mockup & Diretrizes Técnicas
 
 ### 1. Protótipo Interativo UX/UI
 - **Localização:** [CSISYS/Mockup/index.html](file:///c:/AI-PROJECTS/GROOMY/CSISYS/Mockup/index.html)
-- **Demonstração:**
+- **Demonstração de Telas Mapeadas:**
   - **Agenda por Colunas (`FRM-AGD`):** Visão por profissionais com lançamento direto.
   - **Pedido Expresso Mobile (`FRM-MBL`):** Interface simulação smartphone para funcionários lançarem serviços via Ficha.
   - **Checkout / Atendimento Rápido (`FRM-CHK`):** Calculadora com cálculo imediato do Fator de Desconto e Fator de Cartão na comissão.
@@ -56,21 +56,6 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 ### 2. Impressão de Cupom Não Fiscal no Caixa Desktop
 - **Layout:** Monocromático monoespaçado de 35 a 48 colunas (bobinas de 58mm ou 80mm).
 - **Mecanismo:** CSS `@media print` com suporte a `--kiosk-printing` (impressão silenciosa instantânea no Chrome/Edge) e comandos brutos ESC/POS via Web Serial API para corte de papel/abertura de gaveta.
-
-### 3. Mapeamento dos 17 Relatórios Legados (`G:\Meu Drive\VisualFoxPro\Connection\Relats`)
-- `AGENDA.FRX` / `agendarelat.frx` -> Relatório de Agenda do Salão
-- `aniversario.frx` / `aniversario_abre.frx` -> Relatório de Aniversariantes do Mês com Disparo Direto no WhatsApp
-- `comissao_diario.frx` / `relaçao_comissao.frx` -> Relatórios de Comissão Diária e Extrato Analítico com Fatores
-- `geral.frx` -> **DRE / Dashboard Executivo de Faturamento e Lucro Líquido**
-- `imp_bandeira.frx` -> Conciliação de Vendas por Cartão e Retenção de Taxas
-- `imp_cheque.frx` / `relaçao_cheque.frx` -> Relatório e Comprovantes de Cheques
-- `mala_direta.frx` / `mala.lbx` -> Automação de Mala Direta e Campanhas via WhatsApp
-- `relacao_servicos_prof.frx` -> Ranking de Serviços por Profissional
-- `relaçao_atendimentos.frx` -> Extrato Geral de Atendimentos por Período
-- `relaçao_despesas.frx` -> Contas a Pagar e Despesas Operacionais
-- `relaçao_produtos.frx` -> Inventário de Estoque e Curva ABC de Produtos
-- `relaçao_serviços.frx` -> Tabela Base de Serviços e Comissões
-- `venda_itens.frx` -> Histórico Analítico de Vendas (Produtos vs. Serviços)
 
 ---
 
@@ -82,7 +67,7 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - [x] Execução da migração massiva dos DBFs do FoxPro para a VPS1 (Tabelas completas)
 - [x] Desenvolvimento do mockup funcional HTML interativo ([CSISYS/Mockup/index.html](file:///c:/AI-PROJECTS/GROOMY/CSISYS/Mockup/index.html))
 
-### Etapa 2: Inicialização da Aplicação Next.js, Segurança RBAC & WhatsApp Setup
+### Etapa 2: Inicialização da Aplicação Next.js, Segurança RBAC & WhatsApp Setup (Concluído / Em Andamento)
 - [x] Configuração do projeto Next.js (App Router, TypeScript, Tailwind CSS)
 - [x] Conexão com o banco de dados MySQL na VPS1 (`mysql2/promise` pool sem Prisma ORM)
 - [x] CRUD completo de Gerenciamento de Usuários (`usuarios`) integrado com criptografia Caesar e etiqueta de suporte `FRM-USR`
@@ -102,6 +87,7 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - [ ] Grade/agenda por colunas (uma coluna por Profissional)
 - [ ] Integração Drag & Drop com persistência imediata via Server Actions
 - [ ] Exibição em tempo real de conflitos ou indisponibilidade de horários
+- [ ] Relatório/Impressão da Agenda Diária por Profissional (`AGENDA.FRX` / `agendarelat.frx`)
 
 ### Etapa 5: Módulo de Atendimento Rápido (Recepção) & Comissões
 - [ ] Importação automática da Ficha (ex: abrindo a ficha 2798, o sistema consolida na tela de fechamento todos os serviços adicionados pelos profissionais na mesa/celular)
@@ -109,12 +95,26 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - [ ] Server Action com transação atômica MySQL para finalização de atendimentos:
   - Salvar atendimento final, itens da ordem, pagamentos e gerar comissões ajustadas.
   - Fechar/Limpar a Ficha (marcar pedidos como processados).
-  - Emissão de Cupom Não Fiscal para impressora térmica.
+- [ ] Módulo de Emissão de Cupom Não Fiscal para Impressora Térmica (CSS `@media print` + Kiosk Printing)
 
-### Etapa 6: Módulo de Pagamentos, Módulo Financeiro & Relatórios
+### Etapa 6: Módulo de Pagamentos, Módulo Financeiro & Central de Relatórios (PENDENTES)
 - [ ] Lançamento financeiro de pagamentos (PIX, cartões com taxas, dinheiro com descontos)
 - [ ] Painel do profissional para consulta e solicitação de baixa de comissões acumuladas
-- [ ] Desenvolvimento da Central de Relatórios (Exportação PDF/Excel dos 17 relatórios legados)
+- [ ] Registro histórico de baixas e pagamentos de comissão efetuados
+- [ ] **Desenvolvimento da Central de Relatórios (Mapeamento dos 17 Relatórios Legados):**
+  - [ ] **Relatório 01:** Extrato Analítico de Comissões por Profissional (`relaçao_comissao.frx`) — aplicação dos fatores de cartão/desconto
+  - [ ] **Relatório 02:** Resumo Diário de Comissão por Funcionário (`comissao_diario.frx`)
+  - [ ] **Relatório 03:** DRE & Dashboard Executivo Gerencial de Faturamento/Lucro (`geral.frx`)
+  - [ ] **Relatório 04:** Relação de Aniversariantes do Mês com Disparo Direto no WhatsApp (`aniversario.frx` / `aniversario_abre.frx`)
+  - [ ] **Relatório 05:** Desempenho e Ranking de Serviços por Profissional (`relacao_servicos_prof.frx`)
+  - [ ] **Relatório 06:** Histórico Analítico de Itens Vendidos — Produtos vs. Serviços (`venda_itens.frx`)
+  - [ ] **Relatório 07:** Extrato Geral de Atendimentos por Período e Operador (`relaçao_atendimentos.frx`)
+  - [ ] **Relatório 08:** Gestão de Contas a Pagar e Despesas Operacionais (`relaçao_despesas.frx`)
+  - [ ] **Relatório 09:** Conciliação de Vendas por Bandeira de Cartão e Retenção de Taxas (`imp_bandeira.frx`)
+  - [ ] **Relatório 10:** Controle de Cheques Custodiados e A Vencer (`imp_cheque.frx` / `relaçao_cheque.frx`)
+  - [ ] **Relatório 11:** Inventário de Estoque de Produtos, Custo, Venda e Ponto de Reposição (`relaçao_produtos.frx`)
+  - [ ] **Relatório 12:** Tabela Base de Preços de Serviços e Percentuais de Comissão (`relaçao_serviços.frx`)
+  - [ ] **Relatório 13:** Mala Direta, Campanhas de E-mail e Disparos em Massa via WhatsApp (`mala_direta.frx` / `mala.lbx`)
 
 ---
 
