@@ -124,4 +124,10 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 ---
 
 ## 🛠️ Diretrizes Globais de Interface e Suporte
-- **Identificação Discreta de Telas:** Toda tela da aplicação web (tanto desktop quanto mobile) deve exibir em seu canto inferior direito, com opacidade reduzida e fonte discreta (ex: `text-[10px] text-gray-400/50`), o código único de identificação da tela (ex: `FRM-LGN` para login, `FRM-EXP` para Pedido Expresso, `FRM-AGD` para Agenda, `FRM-ATD` para Atendimento Rápido, `FRM-WTP` para WhatsApp Setup). Essa convenção ajudará a equipe de suporte e manutenção a identificar com exatidão a view operacional utilizada pelo cliente.
+- **Identificação Discreta de Telas (Taxonomia Oficial `PREFIXO_CODIGO`):** Toda tela da aplicação web (tanto desktop quanto mobile) deve exibir em seu canto inferior direito, com opacidade reduzida e fonte discreta (ex: `text-[10px] text-gray-400/50`), o código único de identificação da tela em `sec_apps` seguindo os prefixos padronizados:
+  - **`LST_`**: Listagem / Grid (`LST_USR`, `LST_CLI`, `LST_PRO`, `LST_SER`)
+  - **`DET_`**: Detalhe / Edição (`DET_USR`, `DET_CLI`, `DET_PRO`, `DET_SER`)
+  - **`CON_`**: Consulta Interativa (`CON_AGD`, `CON_AUD`)
+  - **`FRM_`**: Formulário de Ação / Processo (`FRM_LGN`, `FRM_CHK`, `FRM_EXP`, `FRM_WTP`)
+  - **`REL_`**: Relatório / Emissão (`REL_PRN`, `REL_CAT`, `REL_COM`, `REL_DRE`, `REL_ANV`)
+

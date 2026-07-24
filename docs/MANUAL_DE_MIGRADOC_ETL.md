@@ -65,9 +65,26 @@ O controle de segurança e auditoria do sistema segue o padrão de **Controle de
 *   **Chave Primária:** `group_id` (`INT AUTO_INCREMENT`)
 *   **Finalidade:** Definição dos perfis operacionais (`1 = Administrador`, `2 = Recepção / Caixa`, `3 = Profissionais / Atendimento`).
 
-### 3. `sec_apps` — Catálogo de Aplicações e Codificação Discreta
+### 3. `sec_apps` — Catálogo de Aplicações e Taxonomia de Nomenclatura (`PREFIXO_CODIGO`)
 *   **Chave Primária:** `app_name` (`VARCHAR(128)`)
-*   **Finalidade:** Cadastro de rotas e códigos discretos de suporte exibidos no canto inferior direito das telas (ex: `FRM-LGN`, `FRM-USR`, `FRM-WTP`, `FRM-MBL`, `FRM-AGD`, `FRM-CHK`, `FRM-PRN`, `FRM-REL`, `FRM-AUD`).
+*   **Convenção Oficial de Nomenclatura (`PREFIXO_CODIGO`):**
+    *   **`LST_`**: Listagens / Grids / Tabelas de registros (ex: `LST_USR`, `LST_CLI`, `LST_PRO`, `LST_SER`).
+    *   **`DET_`**: Detalhes / Edição de registro individual (ex: `DET_USR`, `DET_CLI`, `DET_PRO`, `DET_SER`).
+    *   **`CON_`**: Consultas / Visões interativas (ex: `CON_AGD` para Agenda por Colunas, `CON_AUD` para Auditoria `sc_log`).
+    *   **`FRM_`**: Formulários de Ação / Processos Transacionais (ex: `FRM_LGN` para Login, `FRM_CHK` para Checkout, `FRM_EXP` para Pedido Expresso Mobile, `FRM_WTP` para Setup EvolutionAPI).
+    *   **`REL_`**: Relatórios / Extratos / Emissões (ex: `REL_PRN` para Recibo Térmico, `REL_CAT` para Central de Relatórios, `REL_COM` para Extrato de Comissões, `REL_DRE` para DRE Geral, `REL_ANV` para Aniversariantes).
+
+```sql
+CREATE TABLE `sec_apps` (
+  `app_name` varchar(128) NOT NULL,
+  `app_type` varchar(255) DEFAULT NULL,
+  `app_route` varchar(255) DEFAULT NULL,
+  `description` varchar(255) DEFAULT NULL,
+  `app_video_link` varchar(255) DEFAULT NULL,
+  `app_video_conf` varchar(150) DEFAULT NULL,
+  PRIMARY KEY (`app_name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+```
 
 ### 4. `sec_groups_apps` — Permissões Granulares por Grupo e Tela
 *   **Chave Primária Composta:** (`group_id`, `app_name`)
