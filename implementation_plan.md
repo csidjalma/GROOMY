@@ -23,26 +23,35 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - **Acesso Operacional:** Usuário `csi_super` com permissões completas concedidas.
 - **Tecnologia DBF -> MySQL:** Script em Python (`migrate_dbfs.py`) utilizando `dbfread`, `pymysql` e `sshtunnel` lendo a base local.
 
-### 📊 Estatísticas da Migração de Dados (ETL Realizado):
-- **clientes**: 6.305 registros
-- **profissionais**: 15 registros
-- **servicos**: 391 registros
-- **agenda_vfp**: 16.602 registros (grade original do FoxPro)
-- **atendimentos**: 52.026 registros
-- **itens_atendimento**: 150.827 registros
-- **pagamentos**: 51.880 registros
-- **comissoes**: 592.665 registros
-- **produtos**: 26 registros
+### 📊 Estatísticas da Migração 100% Exata de Dados (ETL Realizado):
+- **cliente**: 6.305 registros (AUTO_INCREMENT = 6685)
+- **profissionais**: 15 registros (AUTO_INCREMENT = 138)
+- **servicos**: 391 registros (AUTO_INCREMENT = 458)
+- **agenda**: 16.602 registros (grade original do FoxPro)
+- **atendimento**: 52.026 registros (AUTO_INCREMENT = 256998)
+- **itens_atend**: 150.827 registros (Nome exato do DBF `ITENS_ATEND.Dbf`)
+- **itens_pagamento**: 51.880 registros (Nome exato do DBF `ITENS_PAGAMENTO.Dbf`)
+- **comissao**: 592.665 registros (Nome exato do DBF `COMISSAO.Dbf`)
+- **produtos**: 26 registros (AUTO_INCREMENT = 620)
 - **servicos_profissional**: 6.136 registros
-- **caixa**: 5.501 registros
-- **despesas**: 38.056 registros
-- **bandeiras**: 6 registros
-- **atividades**: 5 registros
-- **pedidos**: 0 registros
-- **usuarios**: 7 registros (incluindo MESTRE, WAGNER, ROSA e RAPHAEL)
+- **caixa**: 5.503 registros
+- **despezas**: 38.056 registros (AUTO_INCREMENT = 38216)
+- **bandeira**: 6 registros (AUTO_INCREMENT = 18)
+- **atividade**: 5 registros (AUTO_INCREMENT = 6)
+- **pedido**: 0 registros (AUTO_INCREMENT = 1)
+- **cheque**: 62.224 registros
+- **cep**: 192.233 registros
+- **historico_produto**: 6.110 registros
+- **horario**: 29 registros
+- **desp2016**: 7 registros
+- **desp_ant**: 1.215 registros
+- **prox_num**: 1 registro
+- **usuario**: 7 registros (operadores legados)
+- **usuario_ativo**: 1 registro
+- **configura**: 1 registro
 - **Tabelas de Segurança (RBAC)**:
   - `sec_users`: Tabela de usuários RBAC com hash MD5 de senha, suporte a tokens e ativadores.
-  - `sec_apps`: Catálogo de módulos/telas (semeado com 10 aplicações padrão).
+  - `sec_apps`: Catálogo de módulos/telas (semeado com 19 aplicações padrão `PREFIXO_CODIGO`).
   - `sec_groups`: Definição de grupos de trabalho (Administrador, Recepção, Profissional, etc.).
   - `sec_users_groups`: Relação Muitos-para-Muitos entre Usuários e Grupos.
   - `sec_groups_apps`: Permissões granulares de acesso (Ler, Gravar, Alterar, Excluir, Exportar, Imprimir) por grupo em cada app.
