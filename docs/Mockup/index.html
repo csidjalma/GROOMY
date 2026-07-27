@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Groomy ERP — Mockup V1 Executivo &amp; Fluxo Interativo</title>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-main: #020617;
+      --bg-surface: #0f172a;
+      --bg-card: #1e293b;
+      --bg-input: #020617;
+      --border-color: rgba(255, 255, 255, 0.08);
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent-gold: #fbbf24;
+      --accent-indigo: #6366f1;
+      --accent-emerald: #10b981;
+      --accent-rose: #f43f5e;
+      --accent-cyan: #06b6d4;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', sans-serif; }
+    body { background-color: var(--bg-main); color: var(--text-main); display: flex; height: 100vh; overflow: hidden; }
+
+    /* Sidebar Navigation */
+    .sidebar {
+      width: 260px;
+      background: var(--bg-surface);
+      border-right: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      padding: 20px 14px;
+      gap: 20px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 8px;
+    }
+    .brand-icon {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, var(--accent-gold), #d97706);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      box-shadow: 0 4px 15px rgba(251, 191, 36, 0.25);
+    }
+    .brand-text h1 { font-size: 1.25rem; font-weight: 800; letter-spacing: -0.5px; background: linear-gradient(90deg, #fff, #cbd5e1); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .brand-text span { font-size: 0.7rem; color: var(--accent-gold); font-weight: 600; text-transform: uppercase; letter-spacing: 1px; }
+
+    .nav-section { display: flex; flex-direction: column; gap: 4px; }
+    .nav-title { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted); padding: 8px 10px; font-weight: 700; }
+    
+    .nav-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px 12px;
+      border-radius: 8px;
+      color: var(--text-muted);
+      cursor: pointer;
+      font-size: 0.88rem;
+      font-weight: 500;
+      transition: all 0.2s ease;
+    }
+    .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.05); color: var(--text-main); }
+    .nav-item.active { background: rgba(99, 102, 241, 0.15); color: var(--accent-indigo); border: 1px solid rgba(99, 102, 241, 0.3); }
+    .nav-item-left { display: flex; align-items: center; gap: 10px; }
+    .nav-tag { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; background: rgba(255, 255, 255, 0.08); padding: 2px 6px; border-radius: 4px; color: var(--text-muted); }
+    .nav-item.active .nav-tag { background: rgba(99, 102, 241, 0.25); color: var(--accent-indigo); }
+
+    /* Status Bar at Bottom Sidebar */
+    .evolution-status {
+      margin-top: auto;
+      background: rgba(16, 185, 129, 0.08);
+      border: 1px solid rgba(16, 185, 129, 0.2);
+      border-radius: 10px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--accent-emerald); box-shadow: 0 0 10px var(--accent-emerald); }
+    .status-info { font-size: 0.75rem; }
+    .status-info strong { display: block; color: var(--text-main); }
+    .status-info span { color: var(--accent-emerald); font-size: 0.7rem; }
+
+    /* Main Area */
+    .main-wrapper { flex: 1; display: flex; flex-direction: column; overflow: hidden; background: var(--bg-main); }
+
+    .topbar {
+      height: 64px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+    }
+    .page-title { display: flex; align-items: center; gap: 12px; }
+    .page-title h2 { font-size: 1.1rem; font-weight: 700; }
+    .page-code { font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; background: rgba(251, 191, 36, 0.15); color: var(--accent-gold); padding: 4px 8px; border-radius: 6px; border: 1px solid rgba(251, 191, 36, 0.3); }
+
+    .user-profile { display: flex; align-items: center; gap: 16px; }
+    .btn-mobile-demo {
+      background: linear-gradient(135deg, var(--accent-emerald), #047857);
+      color: #fff;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 0.82rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+    .user-badge { display: flex; align-items: center; gap: 10px; background: rgba(255, 255, 255, 0.04); padding: 6px 12px; border-radius: 20px; border: 1px solid var(--border-color); }
+    .user-avatar { width: 28px; height: 28px; border-radius: 50%; background: var(--accent-indigo); display: flex; align-items: center; justify-content: center; font-size: 0.75rem; font-weight: 700; }
+
+    .content-area { flex: 1; padding: 24px; overflow-y: auto; display: flex; flex-direction: column; gap: 20px; }
+
+    /* Content Cards & Grids */
+    .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+    .metric-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      position: relative;
+      overflow: hidden;
+    }
+    .metric-card::before { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-gold); }
+    .metric-card.emerald::before { background: var(--accent-emerald); }
+    .metric-card.indigo::before { background: var(--accent-indigo); }
+    .metric-card.rose::before { background: var(--accent-rose); }
+    .metric-label { font-size: 0.78rem; color: var(--text-muted); font-weight: 600; text-transform: uppercase; }
+    .metric-value { font-size: 1.6rem; font-weight: 800; font-family: 'JetBrains Mono', monospace; }
+    .metric-sub { font-size: 0.72rem; color: var(--accent-emerald); }
+
+    .panel-card {
+      background: var(--bg-surface);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .panel-header { display: flex; align-items: center; justify-content: space-between; }
+    .panel-header h3 { font-size: 1rem; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+
+    /* Tables */
+    .custom-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 0.85rem; }
+    .custom-table th { padding: 12px 14px; background: rgba(255, 255, 255, 0.03); color: var(--text-muted); font-weight: 600; text-transform: uppercase; font-size: 0.7rem; border-bottom: 1px solid var(--border-color); }
+    .custom-table td { padding: 14px; border-bottom: 1px solid rgba(255, 255, 255, 0.04); }
+    .custom-table tr:hover { background: rgba(255, 255, 255, 0.02); }
+
+    .badge { padding: 4px 8px; border-radius: 6px; font-size: 0.72rem; font-weight: 600; display: inline-block; }
+    .badge-success { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-pending { background: rgba(251, 191, 36, 0.15); color: var(--accent-gold); border: 1px solid rgba(251, 191, 36, 0.3); }
+    .badge-danger { background: rgba(244, 63, 94, 0.15); color: var(--accent-rose); border: 1px solid rgba(244, 63, 94, 0.3); }
+
+    /* Action Buttons */
+    .btn-action {
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .btn-action:hover { background: rgba(255, 255, 255, 0.12); }
+    .btn-action.gold { background: var(--accent-gold); color: #000; font-weight: 700; border: none; }
+
+    /* Mobile Express Modal Mockup */
+    .mobile-modal-overlay {
+      position: fixed;
+      top: 0; left: 0; width: 100vw; height: 100vh;
+      background: rgba(0, 0, 0, 0.85);
+      backdrop-filter: blur(8px);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+    }
+    .mobile-frame {
+      width: 380px;
+      height: 720px;
+      background: #090d16;
+      border: 12px solid #1e293b;
+      border-radius: 40px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+      position: relative;
+      overflow: hidden;
+    }
+    .mobile-notch {
+      width: 140px;
+      height: 24px;
+      background: #1e293b;
+      position: absolute;
+      top: 0; left: 50%;
+      transform: translateX(-50%);
+      border-bottom-left-radius: 14px;
+      border-bottom-right-radius: 14px;
+      z-index: 10;
+    }
+    .mobile-header {
+      padding: 36px 18px 14px;
+      background: var(--bg-surface);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .mobile-content { flex: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 14px; }
+    .mobile-input {
+      background: var(--bg-input);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      color: var(--text-main);
+      font-size: 0.85rem;
+      width: 100%;
+    }
+    .mobile-btn {
+      background: linear-gradient(135deg, var(--accent-indigo), #4338ca);
+      color: #fff;
+      border: none;
+      padding: 14px;
+      border-radius: 10px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="brand">
+      <div class="brand-icon">💈</div>
+      <div class="brand-text">
+        <h1>Groomy ERP</h1>
+        <span>V1.0 — Visual FoxPro Legacy</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">Operacional Salão</div>
+      <div class="nav-item active" onclick="switchTab('CON_AGD', this)">
+        <div class="nav-item-left">📅 Agenda Colunas</div>
+        <span class="nav-tag">CON_AGD</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('LST_CLI', this)">
+        <div class="nav-item-left">👥 Clientes &amp; Fichas</div>
+        <span class="nav-tag">LST_CLI</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('FRM_ATD', this)">
+        <div class="nav-item-left">💳 Atendimento / Checkout</div>
+        <span class="nav-tag">FRM_ATD</span>
+      </div>
+      <div class="nav-item" onclick="openMobileModal()">
+        <div class="nav-item-left">📱 Pedido Expresso Mobile</div>
+        <span class="nav-tag">FRM_EXP</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">Financeiro &amp; Caixa</div>
+      <div class="nav-item" onclick="switchTab('FRM_CXA', this)">
+        <div class="nav-item-left">🔐 Fechamento de Caixa</div>
+        <span class="nav-tag">FRM_CXA</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('LST_COM', this)">
+        <div class="nav-item-left">💰 Comissões &amp; Extrato</div>
+        <span class="nav-tag">LST_COM</span>
+      </div>
+      <div class="nav-item" onclick="switchTab('LST_DSP', this)">
+        <div class="nav-item-left">💸 Lançamento Despesas</div>
+        <span class="nav-tag">LST_DSP</span>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-title">Gestão Exclusiva (Wagner)</div>
+      <div class="nav-item" onclick="switchTab('CON_ADM', this)">
+        <div class="nav-item-left">📊 Dashboard Gerencial</div>
+        <span class="nav-tag">CON_ADM</span>
+      </div>
+    </div>
+
+    <!-- EvolutionAPI Status Footer -->
+    <div class="evolution-status">
+      <div class="status-dot"></div>
+      <div class="status-info">
+        <strong>EvolutionAPI Conectado</strong>
+        <span>WhatsApp 24h Confirmando</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Wrapper -->
+  <div class="main-wrapper">
+    <!-- Topbar -->
+    <div class="topbar">
+      <div class="page-title">
+        <h2 id="tab-title-text">Agenda Interativa por Profissional</h2>
+        <span class="page-code" id="tab-code-text">CON_AGD</span>
+      </div>
+
+      <div class="user-profile">
+        <button class="btn-mobile-demo" onclick="openMobileModal()">📱 Testar Pedido Mobile Profissional</button>
+        <div class="user-badge">
+          <div class="user-avatar">W</div>
+          <span style="font-size: 0.85rem; font-weight: 600;">Wagner (Proprietário)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Content Area -->
+    <div class="content-area" id="content-container">
+
+      <!-- Default Tab: CON_AGD -->
+      <div class="grid-4">
+        <div class="metric-card gold">
+          <span class="metric-label">Agendamentos do Dia</span>
+          <span class="metric-value">48 Fichas</span>
+          <span class="metric-sub">85% Ocupação de Cadeira</span>
+        </div>
+        <div class="metric-card emerald">
+          <span class="metric-label">Faturamento Estimado</span>
+          <span class="metric-value">R$ 5.840,00</span>
+          <span class="metric-sub">▲ 14% vs Média das Sextas</span>
+        </div>
+        <div class="metric-card indigo">
+          <span class="metric-label">Confirmados via WA 24h</span>
+          <span class="metric-value">42 / 48</span>
+          <span class="metric-sub">87,5% Confirmação Direta</span>
+        </div>
+        <div class="metric-card rose">
+          <span class="metric-label">Horários Livres Restantes</span>
+          <span class="metric-value">6 Slots</span>
+          <span class="metric-sub">Intervalo 30min (07h às 21h)</span>
+        </div>
+      </div>
+
+      <!-- Agenda Table View -->
+      <div class="panel-card">
+        <div class="panel-header">
+          <h3>📅 Grade Horária de Atendimento (07:00 às 21:00)</h3>
+          <div style="display: flex; gap: 10px;">
+            <button class="btn-action gold">+ Novo Agendamento</button>
+            <button class="btn-action">🔄 Sincronizar WhatsApp</button>
+          </div>
+        </div>
+
+        <table class="custom-table">
+          <thead>
+            <tr>
+              <th>Horário</th>
+              <th>Profissional 0100 (Carlos - Cabelo)</th>
+              <th>Profissional 0102 (Sabrina - Manicure)</th>
+              <th>Profissional 0105 (Rafael - Barba)</th>
+              <th>Status WA 24h</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">09:00 - 09:30</td>
+              <td><span class="badge badge-success">Maria da Silva (Corte + Escova)</span></td>
+              <td><span class="badge badge-success">Ana Paula (Pé e Mão)</span></td>
+              <td><span class="badge badge-pending">Livre</span></td>
+              <td><span class="badge badge-success">✓ Confirmado WA 24h</span></td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">09:30 - 10:00</td>
+              <td><span class="badge badge-success">Maria da Silva (Finalização)</span></td>
+              <td><span class="badge badge-pending">Juliana Lima (Esmaltação)</span></td>
+              <td><span class="badge badge-success">Roberto Souza (Barba Terapia)</span></td>
+              <td><span class="badge badge-success">✓ Confirmado WA 24h</span></td>
+            </tr>
+            <tr>
+              <td style="font-family: 'JetBrains Mono', monospace; font-weight: 700;">10:00 - 10:30</td>
+              <td><span class="badge badge-pending">Fernanda Santos (Luzes)</span></td>
+              <td><span class="badge badge-pending">Livre</span></td>
+              <td><span class="badge badge-success">Marcos Paulo (Corte Masculino)</span></td>
+              <td><span class="badge badge-pending">⏳ Mensagem Enviada</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Mobile Express Modal -->
+  <div class="mobile-modal-overlay" id="mobile-modal">
+    <div class="mobile-frame">
+      <div class="mobile-notch"></div>
+      <div class="mobile-header">
+        <div>
+          <strong style="font-size: 0.85rem;">📱 Pedido Expresso Mobile</strong>
+          <div style="font-size: 0.68rem; color: var(--accent-gold);">Profissional: 0100 (Carlos)</div>
+        </div>
+        <button onclick="closeMobileModal()" style="background: none; border: none; color: #fff; font-size: 1.2rem; cursor: pointer;">✕</button>
+      </div>
+
+      <div class="mobile-content">
+        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
+          <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">NÚMERO DA FICHA / COMADREJA:</label>
+          <input type="number" class="mobile-input" value="1020" placeholder="Ex: 1020">
+        </div>
+
+        <div style="background: rgba(255,255,255,0.04); padding: 12px; border-radius: 10px; border: 1px solid var(--border-color);">
+          <label style="font-size: 0.72rem; color: var(--text-muted); display: block; margin-bottom: 4px;">SELECIONE O SERVIÇO PRESTADO:</label>
+          <select class="mobile-input">
+            <option>000170 — CHAPINHA + ESCOVA (R$ 80,00 | Comissão 50%)</option>
+            <option>000176 — RECONSTRUÇÃO K-PACK (R$ 150,00 | Comissão 40%)</option>
+            <option>000180 — CORTE FEMININO (R$ 110,00 | Comissão 50%)</option>
+          </select>
+        </div>
+
+        <div style="background: rgba(16, 185, 129, 0.08); border: 1px solid rgba(16, 185, 129, 0.3); padding: 12px; border-radius: 10px;">
+          <div style="font-size: 0.75rem; color: var(--text-muted);">RESUMO ANTES DE CONFIRMAR:</div>
+          <div style="font-size: 1.1rem; font-weight: 700; color: var(--accent-emerald); margin-top: 4px;">Valor Serviço: R$ 80,00</div>
+          <div style="font-size: 0.8rem; color: var(--accent-gold);">Sua Comissão Estimada: R$ 40,00</div>
+        </div>
+
+        <button class="mobile-btn" onclick="alert('✅ Pedido Ficha 1020 gravado com sucesso! Total atualizado na recepção.')">🚀 CONFIRMAR E LANÇAR NA FICHA</button>
+
+        <div style="font-size: 0.7rem; color: var(--text-muted); text-align: center; margin-top: auto;">
+          Autenticado via OTP WhatsApp (EvolutionAPI)
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function openMobileModal() { document.getElementById('mobile-modal').style.display = 'flex'; }
+    function closeMobileModal() { document.getElementById('mobile-modal').style.display = 'none'; }
+
+    function switchTab(code, element) {
+      const codeText = document.getElementById('tab-code-text');
+      const titleText = document.getElementById('tab-title-text');
+      const container = document.getElementById('content-container');
+
+      if (element) {
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        element.classList.add('active');
+      }
+
+      codeText.innerText = code;
+
+      if (code === 'CON_AGD') {
+        titleText.innerText = 'Agenda Interativa por Profissional';
+        container.innerHTML = `
+          <div class="grid-4">
+            <div class="metric-card gold"><span class="metric-label">Agendamentos do Dia</span><span class="metric-value">48 Fichas</span><span class="metric-sub">85% Ocupação</span></div>
+            <div class="metric-card emerald"><span class="metric-label">Faturamento Estimado</span><span class="metric-value">R$ 5.840,00</span><span class="metric-sub">▲ 14% vs Média</span></div>
+            <div class="metric-card indigo"><span class="metric-label">Confirmados via WA 24h</span><span class="metric-value">42 / 48</span><span class="metric-sub">87,5% Confirmação</span></div>
+            <div class="metric-card rose"><span class="metric-label">Slots Livres</span><span class="metric-value">6 Slots</span><span class="metric-sub">Intervalo 30min</span></div>
+          </div>
+          <div class="panel-card">
+            <h3>📅 Grade Horária de Atendimento (07:00 às 21:00)</h3>
+            <table class="custom-table">
+              <thead><tr><th>Horário</th><th>Profissional 0100 (Carlos)</th><th>Profissional 0102 (Sabrina)</th><th>Status WA 24h</th></tr></thead>
+              <tbody>
+                <tr><td>09:00 - 09:30</td><td><span class="badge badge-success">Maria da Silva (Escova)</span></td><td><span class="badge badge-success">Ana Paula (Mão)</span></td><td><span class="badge badge-success">✓ Confirmado WA 24h</span></td></tr>
+                <tr><td>09:30 - 10:00</td><td><span class="badge badge-success">Maria da Silva (Finalização)</span></td><td><span class="badge badge-pending">Juliana Lima (Esmaltação)</span></td><td><span class="badge badge-success">✓ Confirmado WA 24h</span></td></tr>
+              </tbody>
+            </table>
+          </div>`;
+      } else if (code === 'LST_CLI') {
+        titleText.innerText = 'Gestão de Clientes & Fichas Históricas';
+        container.innerHTML = `
+          <div class="panel-card">
+            <div class="panel-header">
+              <h3>👥 Lista de Clientes Registrados (6.305 Registros)</h3>
+              <input type="text" placeholder="🔍 Pesquisar por nome, CPF ou telefone..." style="background: var(--bg-input); border: 1px solid var(--border-color); color: #fff; padding: 8px 14px; border-radius: 8px; width: 320px;">
+            </div>
+            <table class="custom-table">
+              <thead><tr><th>Código</th><th>Nome do Cliente</th><th>Telefone / WhatsApp</th><th>Última Visita</th><th>Ações / Histórico</th></tr></thead>
+              <tbody>
+                <tr>
+                  <td style="font-family: 'JetBrains Mono'; font-weight: 700;">006684</td>
+                  <td><strong>MARIA DA SILVA</strong></td>
+                  <td>(11) 98765-4321</td>
+                  <td>24/07/2026</td>
+                  <td>
+                    <button class="btn-action gold" onclick="alert('Exibindo histórico completo de Maria da Silva (Decrescente)')">📜 Histórico Completo</button>
+                    <button class="btn-action" onclick="alert('Débitos / Pendências: NENHUMA PENDÊNCIA')">💳 Pendências</button>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="font-family: 'JetBrains Mono'; font-weight: 700;">006683</td>
+                  <td><strong>ANA PAULA FERREIRA</strong></td>
+                  <td>(11) 97123-8899</td>
+                  <td>22/07/2026</td>
+                  <td>
+                    <button class="btn-action gold">📜 Histórico Completo</button>
+                    <button class="btn-action" style="color: var(--accent-rose); border-color: var(--accent-rose);">⚠️ Pendências (R$ 80,00)</button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>`;
+      } else if (code === 'FRM_ATD') {
+        titleText.innerText = 'Atendimento & Fechamento de Ficha (Checkout)';
+        container.innerHTML = `
+          <div class="panel-card">
+            <h3>💳 Lançamento de Atendimento — Ficha Pré-Pedido #1020</h3>
+            <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 20px; margin-top: 10px;">
+              <div>
+                <table class="custom-table">
+                  <thead><tr><th>Profissional</th><th>Serviço / Produto</th><th>Qtd</th><th>Valor Unit.</th><th>Comissão Calc.</th></tr></thead>
+                  <tbody>
+                    <tr><td>0100 - Carlos</td><td>CHAPINHA + ESCOVA</td><td>1</td><td>R$ 80,00</td><td>R$ 40,00 (50%)</td></tr>
+                    <tr><td>0100 - Carlos</td><td>RECONSTRUÇÃO K-PACK</td><td>1</td><td>R$ 150,00</td><td>R$ 60,00 (40%)</td></tr>
+                  </tbody>
+                </table>
+              </div>
+              <div style="background: rgba(255,255,255,0.03); padding: 16px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 12px;">
+                <div style="font-size: 0.8rem; color: var(--text-muted);">TOTAL DO ATENDIMENTO:</div>
+                <div style="font-size: 2rem; font-weight: 800; font-family: 'JetBrains Mono'; color: var(--accent-emerald);">R$ 230,00</div>
+                <button class="btn-action gold" style="padding: 12px; font-size: 0.9rem;" onclick="alert('✅ Atendimento Baixado & Impresso Cupom 35 Colunas!')">🖨️ Finalizar &amp; Imprimir Recibo</button>
+              </div>
+            </div>
+          </div>`;
+      } else if (code === 'FRM_CXA') {
+        titleText.innerText = 'Fechamento Cego de Caixa Diário';
+        container.innerHTML = `
+          <div class="panel-card">
+            <h3>🔐 Processamento de Fechamento de Caixa</h3>
+            <div class="grid-4" style="margin-top: 10px;">
+              <div class="metric-card gold"><span class="metric-label">Fundo Inicial</span><span class="metric-value">R$ 200,00</span></div>
+              <div class="metric-card emerald"><span class="metric-label">Dinheiro Recebido</span><span class="metric-value">R$ 1.450,00</span></div>
+              <div class="metric-card indigo"><span class="metric-label">Cartões Créd/Déb</span><span class="metric-value">R$ 3.890,00</span></div>
+              <div class="metric-card rose"><span class="metric-label">Despesas / Sangrias</span><span class="metric-value">R$ 180,00</span></div>
+            </div>
+            <div style="margin-top: 16px; display: flex; gap: 14px; align-items: center;">
+              <input type="number" class="mobile-input" style="width: 280px;" placeholder="Digite o Saldo Físico Contado em Dinheiro...">
+              <button class="btn-action gold" style="padding: 10px 20px;" onclick="alert('✅ Caixa Fechado! Sobra/Quebra: R$ 0,00. Cupom Impresso!')">🔒 Encerrar Caixa &amp; Gerar Cupom</button>
+            </div>
+          </div>`;
+      } else if (code === 'CON_ADM') {
+        titleText.innerText = 'Dashboard Gerencial Mobile do Proprietário';
+        container.innerHTML = `
+          <div class="grid-4">
+            <div class="metric-card gold"><span class="metric-label">Faturamento Hoje</span><span class="metric-value">R$ 5.540,00</span><span class="metric-sub">24 Atendimentos Concluídos</span></div>
+            <div class="metric-card emerald"><span class="metric-label">Liquidez em Caixa</span><span class="metric-value">R$ 1.470,00</span><span class="metric-sub">Disponível em Espécie</span></div>
+            <div class="metric-card indigo"><span class="metric-label">Comissões Acumuladas</span><span class="metric-value">R$ 2.410,00</span><span class="metric-sub">A Pagar aos Profissionais</span></div>
+            <div class="metric-card rose"><span class="metric-label">Ticket Médio</span><span class="metric-value">R$ 230,83</span><span class="metric-sub">Por Cliente Ficha</span></div>
+          </div>`;
+      } else if (code === 'LST_COM') {
+        titleText.innerText = 'Extrato & Repasse de Comissões aos Profissionais';
+        container.innerHTML = `
+          <div class="panel-card">
+            <h3>💰 Comissões Acumuladas por Profissional (592.665 Lançamentos)</h3>
+            <table class="custom-table">
+              <thead><tr><th>Cód. Profissional</th><th>Nome Profissional</th><th>Serviços Realizados</th><th>Base Faturamento</th><th>Comissão Acumulada</th><th>Ações</th></tr></thead>
+              <tbody>
+                <tr><td>0100</td><td><strong>CARLOS EDUARDO</strong></td><td>142 Fichas</td><td>R$ 12.450,00</td><td><strong style="color: var(--accent-emerald);">R$ 6.225,00</strong></td><td><button class="btn-action gold">💸 Pagar Comissão</button></td></tr>
+                <tr><td>0102</td><td><strong>SABRINA ALVES</strong></td><td>98 Fichas</td><td>R$ 4.800,00</td><td><strong style="color: var(--accent-emerald);">R$ 2.400,00</strong></td><td><button class="btn-action gold">💸 Pagar Comissão</button></td></tr>
+              </tbody>
+            </table>
+          </div>`;
+      } else if (code === 'LST_DSP') {
+        titleText.innerText = 'Lançamento de Despesas & Sangrias de Caixa';
+        container.innerHTML = `
+          <div class="panel-card">
+            <h3>💸 Lançamento de Pequenas Despesas Diárias (Abate do Caixa)</h3>
+            <div style="display: flex; gap: 10px; margin-top: 10px;">
+              <input type="text" class="mobile-input" style="width: 250px;" placeholder="Descrição da Despesa (Ex: Café/Marmita)">
+              <input type="number" class="mobile-input" style="width: 150px;" placeholder="Valor R$">
+              <button class="btn-action gold" onclick="alert('✅ Despesa Lançada no Caixa Aberto!')">+ Lançar Despesa</button>
+            </div>
+          </div>`;
+      }
+    }
+  </script>
+</body>
+</html>
