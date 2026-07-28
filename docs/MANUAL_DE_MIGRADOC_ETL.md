@@ -1,125 +1,160 @@
-# Manual de Migração, Tombamento de Dados e Segurança RBAC — Groomy
+# Manual de Migração, Taxonomia de Banco e Protocolo de Tombamento — Groomy
 
-Este documento estabelece as diretrizes de arquitetura, especificação de schema, módulo de segurança RBAC, auditoria forense e o protocolo de execução em duas fases para a conversão e o tombamento definitivo do banco de dados do sistema legado **CSI (Visual FoxPro DBF)** para o novo banco de dados **MySQL VPS1 (`devcs_banco_groomy`)**.
-
----
-
-## 🎯 Filosofia de Arquitetura do Banco de Dados
-
-1. **Hegemonia e Continuidade dos Dados:**
-   Os identificadores numéricos do sistema legado (ex: `cl_codigo`, `pf_codigo`, `se_codigo`, `po_codigo`, `at_codigo`, `de_codigo`, `ba_codigo`, `pe_codigo`) são mantidos como as **Chaves Primárias Únicas e Oficiais do Negócio** no MySQL.
-
-2. **AUTO_INCREMENT Sequencial Sem Conflitos:**
-   Para garantir que o Groomy possa inserir novos registros mantendo a continuidade numérica histórica, cada chave primária é configurada como `INT AUTO_INCREMENT PRIMARY KEY` e o seu ponteiro de sequência é ajustado explicitamente para `MAX(codigo_historico) + 1`.
-
-3. **Paridade 1:1 Absoluta dos Nomes de Tabelas e Colunas:**
-   - Todos os nomes de tabelas correspondem **100% aos nomes exatos dos arquivos `.DBF` originais** (convertidos para caixa baixa e sem caracteres especiais).
-   - *Exemplos:* `ITENS_ATEND.Dbf` -> `itens_atend`, `ITENS_PAGAMENTO.Dbf` -> `itens_pagamento`, `DESPEZAS.Dbf` -> `despezas`, `ATENDIMENTO.Dbf` -> `atendimento`, `CLIENTE.Dbf` -> `cliente`, `COMISSAO.Dbf` -> `comissao`, `CHEQUE.Dbf` -> `cheque`, `BANDEIRA.Dbf` -> `bandeira`, `ATIVIDADE.DBF` -> `atividade`, `PEDIDO.DBF` -> `pedido`, `agenda.dbf` -> `agenda`, `configura.DBF` -> `configura`, `usuario.dbf` -> `usuario`.
-   - Eliminação total de pluralizações artificiais ou sufixos como `_legado`.
+Este documento estabelece as diretrizes completas de arquitetura de banco de dados, taxonomia de nomenclatura de tabelas, módulo de segurança RBAC (`sec_`), regras de descarte de tabelas obsoletas, protocolo de execução e o **banimento estrito de ORMs pesados (Prisma)** em favor de **SQL Direto com Prepared Statements (`mysql2/promise`)** no novo sistema **Groomy ERP (Next.js)** hospedado no MySQL VPS1 (`devcs_banco_groomy`).
 
 ---
 
-## 📊 Mapeamento Exato 1:1 de Tabelas DBF, Chaves Primárias e Registros Migrados
+## ⛔ 1. Diretriz Crítica de Arquitetura: Banimento Estrito do Prisma ORM
 
-| Arquivo `.DBF` Origem (`CSISYS\Dados`) | Tabela Target MySQL VPS1 | Chave Primária / Índices Otimizados | Registros Migrados | `AUTO_INCREMENT` Inicial |
-| :--- | :--- | :--- | :---: | :---: |
-| `CLIENTE.Dbf` | `cliente` | `cl_codigo` (PK AUTO_INCREMENT) | **6.305** | `6685` |
-| `PROFISSIONAIS.dbf` | `profissionais` | `pf_codigo` (PK AUTO_INCREMENT) | **15** | `138` |
-| `serviços.dbf` | `servicos` | `se_codigo` (PK AUTO_INCREMENT) | **391** | `458` |
-| `PRODUTOS.Dbf` | `produtos` | `po_codigo` (PK AUTO_INCREMENT) | **26** | `620` |
-| `ATENDIMENTO.Dbf` | `atendimento` | `at_codigo` (PK AUTO_INCREMENT) | **52.026** | `256.998` |
-| `DESPEZAS.Dbf` | `despezas` | `de_codigo` (PK AUTO_INCREMENT) | **38.056** | `38.216` |
-| `BANDEIRA.Dbf` | `bandeira` | `ba_codigo` (PK AUTO_INCREMENT) | **6** | `18` |
-| `PEDIDO.DBF` | `pedido` | `pe_codigo` (PK AUTO_INCREMENT) | **0** | `1` |
-| `ATIVIDADE.DBF` | `atividade` | `id_ativida` (PK AUTO_INCREMENT) | **5** | `6` |
-| `ITENS_ATEND.Dbf` | `itens_atend` | `idx_itens_atend_prof (at_codigo, pf_codigo)` | **150.827** | N/A |
-| `ITENS_PAGAMENTO.Dbf`| `itens_pagamento` | `idx_pagamentos_atend (at_codigo)` | **51.880** | N/A |
-| `COMISSAO.Dbf` | `comissao` | `idx_comissao_prof_status_data (pf_codigo, co_status, co_datend)` | **592.665** | N/A |
-| `CHEQUE.Dbf` | `cheque` | `idx_cheques_atend (at_codigo)` | **62.224** | N/A |
-| `serviços_profissional.dbf` | `servicos_profissional` | `PRIMARY KEY (pf_codigo, se_codigo)` | **6.136** | N/A |
-| `caixa.dbf` | `caixa` | *(Indexado por `ca_data`)* | **5.503** | N/A |
-| `agenda.dbf` | `agenda` | *(Indexado por `ag_data`)* | **16.602** | N/A |
-| `configura.DBF` | `configura` | *(Chave Única)* | **1** | N/A |
-| `CEP.DBF` | `cep` | *(Tabela de CEPs)* | **192.233** | N/A |
-| `HISTORICO_PRODUTO.DBF`| `historico_produto` | *(Historico)* | **6.110** | N/A |
-| `HORARIO.DBF` | `horario` | *(Horarios)* | **29** | N/A |
-| `desp2016.DBF` | `desp2016` | *(Historico)* | **7** | N/A |
-| `desp_ant.DBF` | `desp_ant` | *(Historico)* | **1.215** | N/A |
-| `prox_num.DBF` | `prox_num` | *(Sequenciadores)* | **1** | N/A |
-| `usuario.dbf` | `usuario` | *(Operadores Legados)* | **7** | N/A |
-| `usuario_ativo.DBF` | `usuario_ativo` | *(Sessao)* | **1** | N/A |
-| **TOTAL GERAL MIGROU**| — | — | **1.182.040+** | — |
+> [!CAUTION]
+> **PROIBIDO O USO DO PRISMA ORM NO PROJETO GROOMY**  
+> O Prisma introduz camadas pesadas de abstração, gera SQLs ineficientes e oculta os planos de execução reais (`EXPLAIN`) do MySQL, induzindo a diagnósticos errôneos de infraestrutura/estrutura quando o problema é a arquitetura da biblioteca de ORM.
+
+### 🚀 Padrão Obrigatório de Banco de Dados no Next.js:
+1. **SQL Direto Nativo via `mysql2/promise`:**  
+   Todas as consultas, relatórios e gravações no backend (Server Actions e Route Handlers) utilizarão **SQL Direto Nativo com Prepared Statements** ou pool de conexões otimizado.
+2. **Transparência e Alta Performance (`EXPLAIN`):**  
+   Todas as consultas no backend devem ser analisadas diretamente com `EXPLAIN` no MySQL VPS1 para garantir respostas em tempo de execução de **< 5ms**, aproveitando 100% dos índices compostos das tabelas.
+3. **Tipagem TypeScript Sem Overhead:**  
+   As interfaces TypeScript espelham diretamente o retorno das consultas SQL, mantendo a aplicação leve e veloz.
 
 ---
 
-## ⚡ Otimizações de Performance Aplicadas (Índices Compostos)
+## 🏷️ 2. Regra de Nomenclatura das Tabelas (`tbl_` vs `sec_`)
 
-1. **Tabela `comissao` (592.665 linhas):**
-   - Criado o índice composto `idx_comissao_prof_status_data` sobre `(pf_codigo, co_status, co_datend)`. Reduz o tempo de execução dos extratos de comissão e DRE de 3.000ms para **< 5ms**.
-   - Criado o índice `idx_comissao_atend` sobre `(at_codigo)`.
+A taxonomia de nomenclatura do banco de dados divide as tabelas em dois grupos estruturais bem definidos:
 
-2. **Tabelas de Detalhe e Fechamento (`itens_atend`, `itens_pagamento`, `cheque`, `atendimento`):**
-   - `itens_atend`: Criado índice composto `idx_itens_atend_prof` sobre `(at_codigo, pf_codigo)`.
-   - `itens_pagamento`: Criado índice `idx_pagamentos_atend` sobre `(at_codigo)`.
-   - `cheque`: Criado índice `idx_cheques_atend` sobre `(at_codigo)`.
-   - `atendimento`: Criado índice `idx_atendimento_cliente` sobre `(cl_codigo, at_inicio)`.
-   - `servicos_profissional`: Definida chave primária composta `PRIMARY KEY (pf_codigo, se_codigo)`.
+### 🟢 A. Tabelas de Negócio e Domínio Operacional (Prefixo `tbl_` com Hierarquia PAI ➔ FILHO)
+Todas as tabelas de negócio utilizam obrigatoriamente o prefixo **`tbl_`** e seguem uma nomenclatura hierárquica que identifica claramente a entidade principal (**PAI**) e suas extensões relativas (**FILHO**).
 
----
+*   **Vantagem no Código Next.js:** Leitura instantânea do que é uma tabela física de banco de dados.
+*   **Vantagem nas Ferramentas (SQLyog/DBeaver):** Agrupamento alfabético perfeito de todas as tabelas do mesmo módulo lado a lado.
 
-## 🛡️ Módulo de Gestão de Acesso, Segurança e Controle RBAC (Prefixo `sec_`)
-
-O controle de segurança e auditoria do sistema segue o padrão de **Controle de Acesso Baseado em Funções (RBAC)** analisado e harmonizado a partir da arquitetura de produção (VPS2 `devcs_banpreca_devel`).
-
-### 1. `sec_users` — Tabela de Usuários e Credenciais
-*   **Chave Primária:** `login` (`VARCHAR(251)`)
-*   **Finalidade:** Armazena os usuários do sistema, senhas em hash MD5, status de ativador (`active`), token de validação de 6 dígitos via WhatsApp (`user_tk`), expiração de senha e metadados de acesso (`last_login_at`, `last_login_ip`).
-
-### 2. `sec_groups` — Grupos de Acesso
-*   **Chave Primária:** `group_id` (`INT AUTO_INCREMENT`)
-*   **Finalidade:** Definição dos perfis operacionais (`1 = Administrador`, `2 = Recepção / Caixa`, `3 = Profissionais / Atendimento`).
-
-### 3. `sec_apps` — Catálogo de Aplicações e Taxonomia de Nomenclatura (`PREFIXO_CODIGO`)
-*   **Chave Primária:** `app_name` (`VARCHAR(128)`)
-*   **Convenção Oficial de Nomenclatura (`PREFIXO_CODIGO`):**
-    *   **`LST_`**: Listagens / Grids / Tabelas de registros (ex: `LST_USR`, `LST_CLI`, `LST_PRO`, `LST_SER`).
-    *   **`DET_`**: Detalhes / Edição de registro individual (ex: `DET_USR`, `DET_CLI`, `DET_PRO`, `DET_SER`).
-    *   **`CON_`**: Consultas / Visões interativas (ex: `CON_AGD` para Agenda por Colunas, `CON_AUD` para Auditoria `sc_log`).
-    *   **`FRM_`**: Formulários de Ação / Processos Transacionais (ex: `FRM_LGN` para Login, `FRM_CHK` para Checkout, `FRM_EXP` para Pedido Expresso Mobile, `FRM_WTP` para Setup EvolutionAPI).
-    *   **`REL_`**: Relatórios / Extratos / Emissões (ex: `REL_PRN` para Recibo Térmico, `REL_CAT` para Central de Relatórios, `REL_COM` para Extrato de Comissões, `REL_DRE` para DRE Geral, `REL_ANV` para Aniversariantes).
-
-### 4. `sec_groups_apps` — Permissões Granulares por Grupo e Tela
-*   **Chave Primária Composta:** (`group_id`, `app_name`)
-*   **Finalidade:** Controle de direitos granulares (`priv_access`, `priv_insert`, `priv_delete`, `priv_update`, `priv_export`, `priv_print`).
+#### Relações PAI ➔ FILHO Mapeadas:
+*   **Módulo Atendimento:**
+    *   `tbl_atendimento` *(PAI — Dados gerais da ficha/atendimento)*
+    *   `tbl_atendimento_itens` *(FILHO — Serviços e produtos realizados no atendimento)*
+    *   `tbl_atendimento_pagamentos` *(FILHO — Formas de pagamento recebidas)*
+    *   `tbl_atendimento_comissao` *(FILHO — Extrato de comissões geradas aos profissionais)*
+    *   `tbl_atendimento_cheque` *(FILHO — Cadastro de cheques vinculados)*
+*   **Módulo Clientes:**
+    *   `tbl_cliente` *(PAI — Cadastro de clientes e fichas)*
+*   **Módulo Profissionais & Serviços:**
+    *   `tbl_profissional` *(PAI — Cadastro de profissionais)*
+    *   `tbl_servico` *(PAI — Catálogo de serviços)*
+    *   `tbl_profissional_servicos` *(N:N — Tabela intermediária de comissões por serviço)*
+*   **Módulo Produtos & Estoque:**
+    *   `tbl_produto` *(PAI — Cadastro e saldo de produtos)*
+    *   `tbl_produto_historico` *(FILHO — Movimentações e histórico de estoque)*
+*   **Módulo Financeiro & Operacional:**
+    *   `tbl_caixa` *(PAI — Fechamentos diários de caixa)*
+    *   `tbl_despesas` *(PAI — Lançamentos de despesas correntes)*
+    *   `tbl_forma_pagamento` *(PAI — Formas e custos operacionais de cartão/PIX)*
+    *   `tbl_agenda` *(PAI — Grade de agendamentos horários)*
+    *   `tbl_pedido` *(PAI — Pedidos prévios/comadreja)*
+    *   `tbl_atividade` *(Apoio — Categorias de atividades)*
+    *   `tbl_horario` *(Apoio — Grade de slots)*
+    *   `tbl_cep` *(Apoio — Tabela de busca de CEPs)*
+    *   `tbl_config` *(Configurações — Dados da empresa e rodapés)*
 
 ---
 
-## 🔍 Auditoria Forense & Reconstrução de Tabelas (`sc_log` / `sec_log`)
+### 🛡️ B. Tabelas de Segurança, RBAC e Auditoria (Prefixo `sec_` Inalterado)
+Tabelas que já possuem prefixos de módulo de segurança mantêm a sua nomenclatura original **sem a adição do prefixo `tbl_`**, garantindo padronização nativa:
 
-### 1. Mecanismo de Reconstrução de Dados (JSON Payload):
-*   A cada alteração (`insert`, `update`, `delete`, `change_password`), a aplicação grava na coluna `description` da tabela `sc_log` o **payload JSON completo da operação**.
-*   **Reconstrução Histórica:** Em caso de exclusão acidental ou sinistro de dados em qualquer tabela (ex: `cliente`, `atendimento`, `comissao`), o estado completo de qualquer registro pode ser reconstruído na íntegra através da reprodução cronológica dos eventos registrados na `sc_log`.
+*   **`sec_users`**: Usuários do sistema, senhas em hash MD5, status de ativador (`active`), token de validação de 6 dígitos via WhatsApp (`user_tk`) e metadados de acesso.
+*   **`sec_groups`**: Perfis/Grupos de acesso (`1 = Administrador`, `2 = Recepção / Caixa`, `3 = Profissionais`).
+*   **`sec_apps`**: Catálogo de aplicações/telas padronizadas na taxonomia `PREFIXO_CODIGO` (`LST_`, `DET_`, `CON_`, `FRM_`, `REL_`).
+*   **`sec_groups_apps`**: Matriz granular de direitos de acesso (`priv_access`, `priv_insert`, `priv_delete`, `priv_update`, `priv_export`, `priv_print`).
+*   **`sec_log`**: Tabela oficial de auditoria forense e reconstrução de payloads JSON (padronizada de `sc_log` para `sec_log`).
+*   **`sec_logged`**: Tabela de controle de sessões ativas do sistema.
 
 ---
 
-## 🔄 Protocolo de Tombamento em Duas Fases
+## 🗑️ 3. Descarte e Unificação de Tabelas Legadas Obsoletas
 
-### 🔹 Fase 1: Desenvolvimento e Validação de Schema (Concluído)
-1. Re-criação dinâmica de todas as 25 tabelas DBF com nomes exatos e tipagem otimizada.
-2. Importação 100% completa de 1.182.000+ registros em lotes transacionais.
-3. Ajuste do ponteiro `AUTO_INCREMENT` para `MAX + 1` em cada tabela com chave sequencial.
-4. Aplicação dos índices compostos de alta performance (`idx_comissao_prof_status_data`, `idx_itens_atend_prof`, etc.).
+Das 25 tabelas originais extraídas do Visual FoxPro, **4 tabelas foram descartadas** por se tratarem de arquivos mortos ou gambiarras de sessão monocusto do legado, e **2 tabelas foram unificadas**:
 
-### 🔹 Fase 2: Tombamento Definitivo (Virada de Chave / Cutover)
-1. **Congelamento:** Bloquear novos lançamentos no sistema legado FoxPro.
-2. **Extração Final:** Executar o script `remigrate_100percent_exact_table_names.py` na raiz do projeto.
-3. **Validação de Totais:** Conferir se a contagem de registros entre os arquivos `.DBF` e as tabelas MySQL VPS1 coincide 100%.
-4. **Ativação:** Liberar o acesso operacional exclusivo pelo Groomy ERP.
+| Tabela Legada FoxPro | Ação | Justificativa Técnica |
+| :--- | :---: | :--- |
+| **`desp2016.DBF`** | 🗑️ **Descartada** | Dados de arquivo morto do ano de 2016. Sem utilidade contábil. |
+| **`desp_ant.DBF`** | 🗑️ **Descartada** | Registros de despesas antigas pré-2016. |
+| **`usuario_ativo.DBF`** | 🗑️ **Descartada** | Gambiarra de sessão monocusto do FoxPro. Substituída por `sec_logged`. |
+| **`prox_num.DBF`** | 🗑️ **Descartada** | Contador manual antigo. Substituído por `AUTO_INCREMENT` nativo do InnoDB. |
+| **`configura.DBF`** | 🔄 **Unificada em `tbl_config`** | Configurações gerais consolidadas na tabela central `tbl_config`. |
+| **`usuario.DBF`** | 🔄 **Unificada em `sec_users`**| Operadores legados consolidados na tabela RBAC `sec_users`. |
+
+---
+
+## 📊 4. Mapeamento Geral do Banco de Dados VPS1 (`devcs_banco_groomy`)
+
+| Tabela no MySQL VPS1 | Módulo / Função | Tabela DBF Origem | Total de Registros | `AUTO_INCREMENT` Inicial |
+| :--- | :---: | :--- | :---: | :---: |
+| **`tbl_atendimento`** | Negócio (PAI) | `ATENDIMENTO.Dbf` | **52.026** | `256.998` |
+| **`tbl_atendimento_itens`** | Negócio (FILHO) | `ITENS_ATEND.Dbf` | **150.827** | N/A |
+| **`tbl_atendimento_pagamentos`** | Negócio (FILHO) | `ITENS_PAGAMENTO.Dbf` | **51.880** | N/A |
+| **`tbl_atendimento_comissao`** | Negócio (FILHO) | `COMISSAO.Dbf` | **592.665** | N/A |
+| **`tbl_atendimento_cheque`** | Negócio (FILHO) | `CHEQUE.Dbf` | **62.224** | N/A |
+| **`tbl_cliente`** | Negócio (PAI) | `CLIENTE.Dbf` | **6.305** | `6.685` |
+| **`tbl_profissional`** | Negócio (PAI) | `PROFISSIONAIS.dbf` | **15** | `138` |
+| **`tbl_servico`** | Negócio (PAI) | `serviços.dbf` | **391** | `458` |
+| **`tbl_profissional_servicos`** | Negócio (N:N) | `serviços_profissional.dbf`| **6.136** | N/A |
+| **`tbl_produto`** | Negócio (PAI) | `PRODUTOS.Dbf` | **26** | `620` |
+| **`tbl_produto_historico`** | Negócio (FILHO) | `HISTORICO_PRODUTO.DBF`| **6.110** | N/A |
+| **`tbl_caixa`** | Negócio (PAI) | `caixa.dbf` | **5.503** | N/A |
+| **`tbl_despesas`** | Negócio (PAI) | `DESPEZAS.Dbf` | **38.056** | `38.216` |
+| **`tbl_forma_pagamento`** | Negócio (PAI) | `BANDEIRA.Dbf` | **6** | `18` |
+| **`tbl_agenda`** | Negócio (PAI) | `agenda.dbf` | **16.602** | N/A |
+| **`tbl_pedido`** | Negócio (PAI) | `PEDIDO.DBF` | **0** | `1` |
+| **`tbl_atividade`** | Apoio | `ATIVIDADE.DBF` | **5** | `6` |
+| **`tbl_horario`** | Apoio | `HORARIO.DBF` | **29** | N/A |
+| **`tbl_cep`** | Apoio | `CEP.DBF` | **192.233** | N/A |
+| **`tbl_config`** | Configuração | `configura.DBF` | **4** | N/A |
+| **`sec_users`** | Segurança RBAC | `USUARIO.DBF` + RBAC | **7** | N/A |
+| **`sec_groups`** | Segurança RBAC | Perfil de Grupos | **3** | `4` |
+| **`sec_apps`** | Segurança RBAC | Taxonomia `PREFIXO_COD`| **19** | N/A |
+| **`sec_groups_apps`** | Segurança RBAC | Matriz de Direitos | **19** | N/A |
+| **`sec_log`** | Auditoria Forense | Registro JSON (`sc_log`) | **0** | N/A |
+| **`sec_logged`** | Sessões Ativas | Sessões de Usuário | **0** | N/A |
+| **TOTAL GERAL MIGROU** | — | — | **1.181.250+** | — |
+
+---
+
+## ⚡ 5. Índices Compostos de Alta Velocidade (Covering Indexes)
+
+Para garantir performance extrema com SQL Direto (`< 5ms`), as tabelas contam com os seguintes índices físicos aplicados no InnoDB:
+
+1. **`tbl_atendimento_comissao` (592k linhas):**
+   * `idx_tbl_comissao_prof_status_data (pf_codigo, co_status, co_datend)`
+   * `idx_tbl_comissao_atend (at_codigo)`
+2. **`tbl_atendimento_itens` (150k linhas):**
+   * `idx_tbl_itens_atend_prof (at_codigo, pf_codigo)`
+3. **`tbl_atendimento_pagamentos` (51k linhas):**
+   * `idx_tbl_pagamentos_atend (at_codigo)`
+4. **`tbl_atendimento_cheque` (62k linhas):**
+   * `idx_tbl_cheques_atend (at_codigo)`
+5. **`tbl_atendimento` (52k linhas):**
+   * `idx_tbl_atendimento_cliente (cl_codigo, at_inicio)`
+
+---
+
+## 🔄 6. Protocolo de Tombamento Definitivo (Dia do Cutover)
+
+No dia da migração final e virada de chave do sistema antigo para o Groomy ERP, siga rigorosamente o procedimento abaixo:
+
+1. **Congelamento Operacional:** Encerrar lançamentos no sistema legado Visual FoxPro.
+2. **Execução do Script Autoritativo:**  
+   Rodar no terminal o script de migração:  
+   `python scratch/remigrate_tbl_exact_schema2.py`
+3. **Validação de Totais:**  
+   Conferir se os totais de registros coincidem com os números listados na tabela da Seção 4.
+4. **Verificação de Ponteiros Sequenciais:**  
+   Confirmar se os ponteiros de `AUTO_INCREMENT` foram ajustados para `MAX + 1`.
+5. **Liberar Acesso Exclusivo no Groomy:** Ativar acesso em produção.
 
 ---
 
 ## 📜 Histórico de Versões e Atualizações do Manual
-*   **v1.3 (25/07/2026):** Restauração 100% estrita da paridade exata dos nomes de tabelas DBF (`itens_atend`, `itens_pagamento`, `despezas`, `atendimento`, `cliente`, `comissao`, `cheque`, `bandeira`, `atividade`, `pedido`, `agenda`, `configura`, `usuario`, `cep`, etc.) e migração total dos 1.182.000+ registros.
-*   **v1.2 (24/07/2026):** Aplicação e especificação técnica dos índices compostos de alta performance.
-*   **v1.1 (24/07/2026):** Enriquecimento com auditoria forense para reconstrução de tabelas via `sc_log` e mecanismos anti-brute force em `sec_logged`.
-*   **v1.0 (24/07/2026):** Paridade de nomes de campos 1:1 e configuração da continuidade sequencial com `AUTO_INCREMENT = MAX + 1`.
+*   **v2.1 (28/07/2026):** **Padronização total com prefixo `tbl_` nas tabelas de negócio (PAI ➔ FILHO), preservação das tabelas de segurança `sec_` (com padronização de `sec_log`) e banimento estrito do Prisma ORM.**
+*   **v2.0 (28/07/2026):** Definição da taxonomia de prefixos e descarte de tabelas legadas mortas.
+*   **v1.3 (25/07/2026):** Restauração 100% estrita dos dados históricos e 1.182.000+ registros.

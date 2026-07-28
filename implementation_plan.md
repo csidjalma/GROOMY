@@ -24,37 +24,33 @@ Este arquivo serve como memória recorrente do projeto, permitindo o acompanhame
 - **Tecnologia DBF -> MySQL:** Script em Python (`migrate_dbfs.py`) utilizando `dbfread`, `pymysql` e `sshtunnel` lendo a base local.
 
 ### 📊 Estatísticas da Migração 100% Exata de Dados (ETL Realizado):
-- **cliente**: 6.305 registros (AUTO_INCREMENT = 6685)
-- **profissionais**: 15 registros (AUTO_INCREMENT = 138)
-- **servicos**: 391 registros (AUTO_INCREMENT = 458)
-- **agenda**: 16.602 registros (grade original do FoxPro)
-- **atendimento**: 52.026 registros (AUTO_INCREMENT = 256998)
-- **itens_atend**: 150.827 registros (Nome exato do DBF `ITENS_ATEND.Dbf`)
-- **itens_pagamento**: 51.880 registros (Nome exato do DBF `ITENS_PAGAMENTO.Dbf`)
-- **comissao**: 592.665 registros (Nome exato do DBF `COMISSAO.Dbf`)
-- **produtos**: 26 registros (AUTO_INCREMENT = 620)
-- **servicos_profissional**: 6.136 registros
-- **caixa**: 5.503 registros
-- **despezas**: 38.056 registros (AUTO_INCREMENT = 38216)
-- **bandeira**: 6 registros (AUTO_INCREMENT = 18)
-- **atividade**: 5 registros (AUTO_INCREMENT = 6)
-- **pedido**: 0 registros (AUTO_INCREMENT = 1)
-- **cheque**: 62.224 registros
-- **cep**: 192.233 registros
-- **historico_produto**: 6.110 registros
-- **horario**: 29 registros
-- **desp2016**: 7 registros
-- **desp_ant**: 1.215 registros
-- **prox_num**: 1 registro
-- **usuario**: 7 registros (operadores legados)
-- **usuario_ativo**: 1 registro
-- **configura**: 1 registro
-- **Tabelas de Segurança (RBAC)**:
+- **tbl_cliente**: 6.305 registros (AUTO_INCREMENT = 6685)
+- **tbl_profissional**: 15 registros (AUTO_INCREMENT = 138)
+- **tbl_servico**: 391 registros (AUTO_INCREMENT = 458)
+- **tbl_profissional_servicos**: 6.136 registros
+- **tbl_agenda**: 16.602 registros (grade original do FoxPro)
+- **tbl_atendimento**: 52.026 registros (AUTO_INCREMENT = 256998)
+- **tbl_atendimento_itens**: 150.827 registros (Tabela FILHO de Atendimento)
+- **tbl_atendimento_pagamentos**: 51.880 registros (Tabela FILHO de Atendimento)
+- **tbl_atendimento_comissao**: 592.665 registros (Tabela FILHO de Atendimento)
+- **tbl_atendimento_cheque**: 62.224 registros (Tabela FILHO de Atendimento)
+- **tbl_produto**: 26 registros (AUTO_INCREMENT = 620)
+- **tbl_produto_historico**: 6.110 registros (Tabela FILHO de Produto)
+- **tbl_caixa**: 5.503 registros
+- **tbl_despesas**: 38.056 registros (AUTO_INCREMENT = 38216)
+- **tbl_forma_pagamento**: 6 registros (AUTO_INCREMENT = 18)
+- **tbl_atividade**: 5 registros (AUTO_INCREMENT = 6)
+- **tbl_horario**: 29 registros
+- **tbl_cep**: 192.233 registros
+- **tbl_pedido**: 0 registros (AUTO_INCREMENT = 1)
+- **tbl_config**: 4 registros
+- **Tabelas de Segurança & Auditoria RBAC (`sec_`)**:
   - `sec_users`: Tabela de usuários RBAC com hash MD5 de senha, suporte a tokens e ativadores.
-  - `sec_apps`: Catálogo de módulos/telas (semeado com 19 aplicações padrão `PREFIXO_CODIGO`).
   - `sec_groups`: Definição de grupos de trabalho (Administrador, Recepção, Profissional, etc.).
-  - `sec_users_groups`: Relação Muitos-para-Muitos entre Usuários e Grupos.
-  - `sec_groups_apps`: Permissões granulares de acesso (Ler, Gravar, Alterar, Excluir, Exportar, Imprimir) por grupo em cada app.
+  - `sec_apps`: Catálogo de módulos/telas (semeado com 19 aplicações padrão `PREFIXO_CODIGO`).
+  - `sec_groups_apps`: Permissões granulares de acesso por grupo em cada app.
+  - `sec_log`: Registro de auditoria forense e reconstrução de payloads JSON (padronizado).
+  - `sec_logged`: Controle de sessões ativas do sistema.
   - `sec_logged`: Controle de sessões concorrentes e proteção **anti-brute force** (bloqueio automático de 3 minutos após 3 falhas consecutivas de login).
   - `sc_log` / `sec_log`: **Auditoria Forense de Reconstrução**: grava o snapshot/payload JSON completo de cada `insert`, `update` e `delete`, permitindo a reconstrução integral do estado de qualquer tabela ou registro. Possui trava de exclusão física para usuários auditados.
 - **Tabela de Configurações Dinâmicas**:
