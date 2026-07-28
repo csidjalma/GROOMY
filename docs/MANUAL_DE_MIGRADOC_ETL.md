@@ -20,7 +20,11 @@ Este documento estabelece as diretrizes completas de arquitetura de banco de dad
 
 ---
 
-## 🏷️ 2. Regra de Nomenclatura das Tabelas (`tbl_` vs `sec_`)
+## 🏷️ 2. Regra de Nomenclatura das Tabelas (`tbl_` vs `sec_`) e Paridade 100% Estrita dos Nomes de Campos
+
+> [!IMPORTANT]
+> **PARIDADE 100% EXATA DE NOMES DE CAMPOS E CHAVES PRIMÁRIAS**  
+> Para garantir que nenhuma regra de negócio, índice ou chave primária seja quebrada, **todos os nomes de colunas no MySQL preservam 100% o nome bruto exato original definido nos arquivos `.DBF` originais** (ex: `AT_CODIGO`, `CL_CODIGO`, `PF_CODIGO`, `AT_PREÇOTO`, `DE_DESCRIÇ`, `PO_PREÇOCU`, `PO_DURAÇÃO`, `CX_USUÁRIO`, `SE_DESCRIÇ`, etc.), sem qualquer substituição artificial ou alteração de caracteres.
 
 A taxonomia de nomenclatura do banco de dados divide as tabelas em dois grupos estruturais bem definidos:
 
